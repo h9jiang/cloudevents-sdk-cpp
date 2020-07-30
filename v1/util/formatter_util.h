@@ -8,7 +8,7 @@
 #include "v1/event_format/json_formatter.h"
 
 namespace cloudevents {
-namespace util {
+namespace formatter_util {
 
 class FormatterUtil {
     public:

@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 namespace cloudevents {
-namespace util {
+namespace formatter_util {
 
 using ::cloudevents::format::Format;
 using ::cloudevents::format::Formatter;
