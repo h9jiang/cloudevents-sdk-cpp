@@ -8,25 +8,26 @@
 #include "v1/event_format/json_formatter.h"
 
 namespace cloudevents {
-namespace formatter_util {
+namespace util {
 
 class FormatterUtil {
- public:
-  // Converts a given string to a cloudevents::format::Format
-  // Throws InternalError() if string cannot be mapped succesfully.
-  static absl::StatusOr<cloudevents::format::Format> FormatFromStr(
-    absl::string_view format_str);
+    public:
+        // // Converts a given string to a cloudevents::format::Format
+        // // Throws InternalError() if string cannot be mapped succesfully.
+        // static absl::StatusOr<
+        //         cloudevents::format::Format> 
+        //     DestringifyFormat(std::string format_str);
 
-  // Converts a cloudevents::format::Format to its string representation
-  static absl::StatusOr<std::string> FormatToStr(
-    const cloudevents::format::Format& format);
-
-  // Returns Formatter that handles the given Format
-  static absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
-    GetFormatter(const cloudevents::format::Format& format);
+        // // Converts a cloudevents::format::Format to its string representation
+        // static std::string StringifyFormat(cloudevents::format::Format format);
+        
+        // // Returns Formatter that handles the given Format
+        // static absl::StatusOr<
+        //         std::unique_ptr<cloudevents::format::Formatter>> 
+        //     GetFormatter(cloudevents::format::Format format);
 };
 
-}  // namespace formatter_util
-}  // namespace cloudevents
+} // util
+} // cloudevents
 
-#endif  // CLOUDEVENTSCPPSDK_V1_UTIL_FORMATTERUTIL
+#endif //CLOUDEVENTSCPPSDK_V1_UTIL_FORMATTERUTIL
