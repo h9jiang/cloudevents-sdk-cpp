@@ -1,7 +1,7 @@
 #include "formatter_util.h"
 
 namespace cloudevents {
-namespace util {
+namespace formatter_util {
 
 using ::cloudevents::format::Format;
 using ::cloudevents::format::Formatter;
