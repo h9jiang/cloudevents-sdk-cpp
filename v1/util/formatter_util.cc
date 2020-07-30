@@ -21,5 +21,16 @@ std::string FormatterUtil::StringifyFormat(Format format) {
     }
 }
 
+absl::StatusOr<
+        std::unique_ptr<Formatter>> 
+        FormatterUtil::GetFormatter(Format format) {
+    switch (format) {
+        case Format::kJson:
+            auto m = new JsonFormatter;
+            return std::unique_ptr<Formatter>(m);
+    }
+    return absl::InternalError("Could not find formatter for given format.");
+}
+
 } // util
 } // cloudevents

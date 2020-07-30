@@ -21,10 +21,10 @@ class FormatterUtil {
         // Converts a cloudevents::format::Format to its string representation
         static std::string StringifyFormat(cloudevents::format::Format format);
         
-        // // Returns Formatter that handles the given Format
-        // static absl::StatusOr<
-        //         std::unique_ptr<cloudevents::format::Formatter>> 
-        //     GetFormatter(cloudevents::format::Format format);
+        // Returns Formatter that handles the given Format
+        static absl::StatusOr<
+                std::unique_ptr<cloudevents::format::Formatter>> 
+            GetFormatter(cloudevents::format::Format format);
 };
 
 } // util
