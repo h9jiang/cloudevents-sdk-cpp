@@ -18,8 +18,8 @@ class FormatterUtil {
                 cloudevents::format::Format> 
             DestringifyFormat(std::string format_str);
 
-        // // Converts a cloudevents::format::Format to its string representation
-        // static std::string StringifyFormat(cloudevents::format::Format format);
+        // Converts a cloudevents::format::Format to its string representation
+        static std::string StringifyFormat(cloudevents::format::Format format);
         
         // // Returns Formatter that handles the given Format
         // static absl::StatusOr<
