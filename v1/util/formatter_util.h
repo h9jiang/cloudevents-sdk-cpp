@@ -12,11 +12,11 @@ namespace util {
 
 class FormatterUtil {
     public:
-        // // Converts a given string to a cloudevents::format::Format
-        // // Throws InternalError() if string cannot be mapped succesfully.
-        // static absl::StatusOr<
-        //         cloudevents::format::Format> 
-        //     DestringifyFormat(std::string format_str);
+        // Converts a given string to a cloudevents::format::Format
+        // Throws InternalError() if string cannot be mapped succesfully.
+        static absl::StatusOr<
+                cloudevents::format::Format> 
+            DestringifyFormat(std::string format_str);
 
         // // Converts a cloudevents::format::Format to its string representation
         // static std::string StringifyFormat(cloudevents::format::Format format);
