@@ -14,5 +14,12 @@ absl::StatusOr<Format> FormatterUtil::DestringifyFormat(std::string format_str) 
     return absl::InvalidArgumentError("The given format is not currently recognized by the SDK.");
 }
 
+std::string FormatterUtil::StringifyFormat(Format format) {
+    switch (format) {
+        case Format::kJson:
+            return std::string("json");
+    }
+}
+
 } // util
 } // cloudevents
