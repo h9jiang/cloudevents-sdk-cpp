@@ -18,143 +18,15 @@
 namespace cloudevents {
 namespace binding {
 
-/* 
- * Template for marshalling between protocol-specific Messages and CloudEvents.
- * Each supported ProtocolBinding will implement template specialization 
- * for the protected functions.
- *
- * User will interact with the public method functions Bind() and Unbind().
- * Bind() will marhsal a CloudEvent to a protocol-specific Message.
- * Unbind() will marshal a protocol-specific message to a CloudEvent.
- * To create a StructuredContentMode Message, pass a EventFormat parameter to Bind().
- * Code samples available in README.md.
- */
-template <typename Message>
+template <class Message>
 class Binder {
- public:
-  // Create BinaryContentMode Message containing CloudEvent
-  absl::StatusOr<Message> Bind(io::cloudevents::v1::CloudEvent cloud_event) {
-    return BindBinary(cloud_event);
-  }
+    // Template, each protocol should implement a concrete version of this.
 
-  // Create StructuredContentMode Message containing Format-serialized CloudEvent  
-  absl::StatusOr<Message> Bind(io::cloudevents::v1::CloudEvent cloud_event, cloudevents::format::Format format) {
-    absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>> get_formatter;
-    get_formatter = cloudevents::formatter_util::FormatterUtil::GetFormatter(format);
-    if (!get_formatter.ok()) {
-      return get_formatter.status();
-    }
-    
-    absl::StatusOr<std::unique_ptr<cloudevents::format::StructuredCloudEvent>> serialization =
-      (*get_formatter)->Serialize(cloud_event);
-    if (!serialization.ok()) {
-      return serialization.status();
-    }
+    // In general built off of a template method design pattern.  
+    // Main function methods are Unbind and Bind.
 
-    absl::StatusOr<std::string> format_str = cloudevents::formatter_util::
-      FormatterUtil::FormatToStr((*serialization)->format);
-    if (!format_str.ok()) {
-        return format_str.status();
-    }
-
-    std::string contenttype = kContenttypePrefix.data();
-    contenttype += *format_str;
-      
-    Message msg;
-    absl::Status set_contenttype = SetContentType(msg, contenttype);
-    if (!set_contenttype.ok()) {
-      return set_contenttype;
-    }
-
-    if (auto set_payload = SetPayload(msg, (*serialization)->serialized_data); !set_payload.ok()) {
-      return set_payload;
-    }
-  
-    return msg;
-  }
-
-  // Create CloudEvent from given Message
-  absl::StatusOr<io::cloudevents::v1::CloudEvent> Unbind(Message& message) {
-    absl::StatusOr<std::string> contenttype = GetContentType(message);
-    if (!contenttype.ok()) {
-      return contenttype.status();
-    }
-    if (contenttype->empty() || 
-        contenttype->rfind(kContenttypePrefix.data(), 0) != 0) {
-      return UnbindBinary(message);
-    }
-
-    std::string format_str = contenttype->erase(
-      0, strlen(kContenttypePrefix.data()));
-
-    absl::StatusOr<cloudevents::format::Format> format = cloudevents::formatter_util::
-      FormatterUtil::FormatFromStr(format_str);
-    if (!format.ok()){
-      return format.status();
-    }
-
-    absl::StatusOr<std::string> get_payload = GetPayload(message);
-
-    if (!get_payload.ok()) {
-      return get_payload.status();
-    }
-
-    absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>> get_formatter;
-    get_formatter = cloudevents::formatter_util::FormatterUtil::GetFormatter(*format);
-    if (!get_formatter.ok()) {
-      return get_formatter.status();
-    }
-
-    cloudevents::format::StructuredCloudEvent structured_cloud_event;
-    structured_cloud_event.format = *format;
-    structured_cloud_event.serialized_data = *get_payload;
-
-    absl::StatusOr<io::cloudevents::v1::CloudEvent> deserialization =
-      (*get_formatter)->Deserialize(structured_cloud_event);
-    if (!deserialization.ok()){
-      return deserialization.status();
-    }
-    return *deserialization;
-  }
-
-
-// The following operations are protocol-specific and
-// will be overriden for each supported ProtocolBinding
- private:
-  // Constexpr keys used accross ProtocolBindings
-  static inline constexpr absl::string_view kMetadataPrefix = "ce-";
-  static inline constexpr absl::string_view kContenttypePrefix = "application/cloudevents+";
-  static inline constexpr absl::string_view kContenttypeKey = "datacontenttype";
-
-  absl::StatusOr<std::string> GetContentType(Message& message) {
-    return absl::InternalError("Unimplemented operation");
-  }
-  
-  absl::StatusOr<std::string> GetPayload(Message& message) {
-    return absl::InternalError("Unimplemented operation");
-  }
-
-  // TODO (#52): Refactor Unbind/Bind Binary into several
-  // protocol specific getters/ setters
-  // Marshals a BinaryContentMode message into a CloudEvent
-  absl::StatusOr<io::cloudevents::v1::CloudEvent> UnbindBinary(Message& binary_message) {
-    return absl::InternalError("Unimplemented operation");
-  }
-
-  // _____ Operations used in Bind _____
-
-  absl::Status SetContentType(Message& message, std::string contenttype) {
-    return absl::InternalError("Unimplemented operation");
-  }
-
-  absl::Status SetPayload(Message& message, std::string payload) {
-    return absl::InternalError("Unimplemented operation");
-  }
-
-  // Marshals a CloudEvent into a BinaryContentMode message
-  absl::StatusOr<Message> BindBinary(io::cloudevents::v1::CloudEvent& cloud_event) {
-    return absl::InternalError("Unimplemented operation");
-  }
+    // Bind takes a CloudEvent [and Format], or StructuredCloudEvent as input, and creates a XMessage as ouput
+    // Unbind takes an XMessage as input, and creates a CloudEvent or StructuredCloudEvent.
 };
 
 } // format
