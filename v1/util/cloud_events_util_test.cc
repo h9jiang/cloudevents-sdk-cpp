@@ -1,5 +1,4 @@
 #include "cloud_events_util.h"
-
 #include <google/protobuf/timestamp.pb.h>
 #include <google/protobuf/util/time_util.h>
 #include <gtest/gtest.h>
