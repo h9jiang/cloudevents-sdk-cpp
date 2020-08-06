@@ -7,14 +7,15 @@ using ::cloudevents::format::Format;
 using ::cloudevents::format::Formatter;
 using ::cloudevents::format::JsonFormatter;
 
-absl::StatusOr<Format> FormatterUtil::DestringifyFormat(std::string format_str) {
+absl::StatusOr<Format> FormatterUtil::DestringifyFormat(
+        const std::string& format_str) {
     if (format_str == "json") {
         return Format::kJson;
     }
     return absl::InvalidArgumentError("The given format is not currently recognized by the SDK.");
 }
 
-std::string FormatterUtil::StringifyFormat(Format format) {
+std::string FormatterUtil::StringifyFormat(const Format& format) {
     switch (format) {
         case Format::kJson:
             return std::string("json");
@@ -23,7 +24,7 @@ std::string FormatterUtil::StringifyFormat(Format format) {
 
 absl::StatusOr<
         std::unique_ptr<Formatter>> 
-        FormatterUtil::GetFormatter(Format format) {
+        FormatterUtil::GetFormatter(const Format& format) {
     switch (format) {
         case Format::kJson:
             auto m = new JsonFormatter;

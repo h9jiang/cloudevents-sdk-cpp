@@ -16,15 +16,15 @@ class FormatterUtil {
         // Throws InternalError() if string cannot be mapped succesfully.
         static absl::StatusOr<
                 cloudevents::format::Format> 
-            DestringifyFormat(std::string format_str);
+            DestringifyFormat(const std::string& format_str);
 
         // Converts a cloudevents::format::Format to its string representation
-        static std::string StringifyFormat(cloudevents::format::Format format);
+        static std::string StringifyFormat(const cloudevents::format::Format& format);
         
         // Returns Formatter that handles the given Format
         static absl::StatusOr<
                 std::unique_ptr<cloudevents::format::Formatter>> 
-            GetFormatter(cloudevents::format::Format format);
+            GetFormatter(const cloudevents::format::Format& format);
 };
 
 } // util
