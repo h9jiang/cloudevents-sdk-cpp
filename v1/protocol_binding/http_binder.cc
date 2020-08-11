@@ -16,5 +16,14 @@ typedef absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute> CeAttrM
 
 constexpr absl::string_view kHttpContentKey = "Content-Type";
 
+template <>
+absl::StatusOr<std::string> Binder<HttpRequest>::GetContentType(HttpRequest& http_req) {
+    auto iter = http_req.base().find(kHttpContentKey.data());
+    if (iter == http_req.base().end()) {
+        return std::string("");
+    }
+    return std::string(iter->value());
+}
+
 } // binding
 } // cloudevents

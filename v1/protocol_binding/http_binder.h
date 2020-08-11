@@ -10,10 +10,10 @@ namespace binding {
 typedef boost::beast::http::request<boost::beast::http::string_body> HttpRequest;
 
 // HTTP specialization
-// template <>
-// absl::StatusOr<std::string> 
-//     Binder<boost::beast::http::request<boost::beast::http::string_body>>::
-//     GetContentType(HttpRequest& http_msg);
+template <>
+absl::StatusOr<std::string> 
+    Binder<boost::beast::http::request<boost::beast::http::string_body>>::
+    GetContentType(HttpRequest& http_msg);
 
 // template <>
 // absl::StatusOr<std::string> 
