@@ -30,5 +30,32 @@ absl::StatusOr<std::string> Binder<HttpRequest>::GetPayload(HttpRequest& http_re
     return http_req.body();
 }
 
+template <>
+absl::StatusOr<CloudEvent> Binder<HttpRequest>::UnbindBinary(HttpRequest& http_req) {
+    CloudEvent cloud_event;
+    for (auto it = http_req.base().begin(); it!=http_req.base().end(); ++it) {
+        std::string key;
+        std::string header_key = (*it).name_string().to_string();
+        if (header_key == kHttpContentKey.data()) {
+            key = kContenttypeKey.data();
+        } 
+        else if (header_key.rfind(kMetadataPrefix.data(), 0) == 0){
+            size_t len_prefix = strlen(kMetadataPrefix.data());
+            key = header_key.substr(len_prefix, std::string::npos);
+        }
+        CloudEventsUtil::SetMetadata(cloud_event, key, (*it).value().to_string());
+    }
+
+    std::string http_data = http_req.body();
+    if (!http_data.empty()) {
+        cloud_event.set_binary_data(http_data);
+    }
+    
+    if (!CloudEventsUtil::IsValid(cloud_event)) {
+        return absl::InvalidArgumentError("Pubsub Message given does not contain a valid binary Cloud Event");
+    }
+    return cloud_event;
+}
+
 } // binding
 } // cloudevents
