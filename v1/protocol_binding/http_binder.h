@@ -25,11 +25,6 @@ absl::StatusOr<io::cloudevents::v1::CloudEvent>
     Binder<boost::beast::http::request<boost::beast::http::string_body>>::UnbindBinary(
     boost::beast::http::request<boost::beast::http::string_body>& pubsub_msg);
 
-// template <>
-// absl::StatusOr<boost::beast::http::request<boost::beast::http::string_body>> 
-//     Binder<boost::beast::http::request<boost::beast::http::string_body>>::BindBinary(
-//     io::cloudevents::v1::CloudEvent& cloud_event);
-
 template <>
 absl::Status 
     Binder<boost::beast::http::request<boost::beast::http::string_body>>::SetContentType(
@@ -41,6 +36,11 @@ absl::Status
     Binder<boost::beast::http::request<boost::beast::http::string_body>>::SetPayload(
     boost::beast::http::request<boost::beast::http::string_body>& message, 
     std::string payload);
+
+template <>
+absl::StatusOr<boost::beast::http::request<boost::beast::http::string_body>> 
+    Binder<boost::beast::http::request<boost::beast::http::string_body>>::BindBinary(
+    io::cloudevents::v1::CloudEvent& cloud_event);
 
 } // binding
 } // cloudevents

@@ -71,5 +71,52 @@ absl::Status Binder<HttpRequest>::SetPayload(HttpRequest& http_req,
     return absl::Status();
 }
 
+template <>
+absl::StatusOr<HttpRequest> Binder<HttpRequest>::BindBinary(CloudEvent& cloud_event) {
+    if (!CloudEventsUtil::IsValid(cloud_event)) {
+        return absl::InvalidArgumentError("Cloud Event given is not valid.");
+    }
+
+    HttpRequest http_req;
+
+    absl::StatusOr<CeAttrMap> attrs;
+    attrs = CloudEventsUtil::GetMetadata(cloud_event);
+    if (!attrs.ok()) {
+        return attrs.status();
+    }
+
+    for (auto const& attr : (*attrs)) {
+        absl::StatusOr<std::string> val = CloudEventsUtil::StringifyCeType(attr.second);
+        if (!val.ok()) {
+            return val.status();
+        }
+        std::string key = kMetadataPrefix.data() + attr.first;
+        http_req.base().set(key,*val);
+    }
+
+    // http binding spec states to use the body should carry the data as is
+    std::string data;
+    switch (cloud_event.data_oneof_case()) {
+        case CloudEvent::DataOneofCase::kBinaryData: {
+            data = cloud_event.binary_data();
+            break;
+        }
+        case CloudEvent::DataOneofCase::kTextData: {
+            data = cloud_event.text_data();
+            break;
+        }
+        case CloudEvent::DataOneofCase::kProtoData: {
+            // TODO (#17): Handle CloudEvent Any in JsonFormatter
+            return absl::UnimplementedError("protobuf::Any not supported yet.");
+        }
+        case CloudEvent::DATA_ONEOF_NOT_SET: {
+            break;
+        }
+    }
+
+    http_req.body() = data;
+    return http_req;
+}
+
 } // binding
 } // cloudevents
