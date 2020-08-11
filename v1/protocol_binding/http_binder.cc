@@ -57,5 +57,12 @@ absl::StatusOr<CloudEvent> Binder<HttpRequest>::UnbindBinary(HttpRequest& http_r
     return cloud_event;
 }
 
+template <>
+absl::Status Binder<HttpRequest>::SetContentType(HttpRequest& http_req,
+        std::string contenttype) {
+    http_req.base().set(kHttpContentKey.data(), contenttype);
+    return absl::Status();
+}
+
 } // binding
 } // cloudevents
