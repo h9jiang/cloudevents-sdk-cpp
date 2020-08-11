@@ -291,6 +291,5 @@ TEST(CloudEventsUtilTest, ToString_NotSet) {
   ASSERT_TRUE(absl::IsInvalidArgument(stringify_ce_type.status()));
 }
 
-
 }  // namespace cloudevents_util
 }  // namespace cloudevents
