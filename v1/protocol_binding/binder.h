@@ -125,6 +125,8 @@ class Binder {
             return absl::InternalError("Unimplemented operation");
         }
 
+        // TODO (#52): Refactor Unbind/Bind Binary into several
+        // protocol specific getters/ setters
         // Marshals a BinaryContentMode message into a CloudEvent
         absl::StatusOr<io::cloudevents::v1::CloudEvent> UnbindBinary(Message& binary_message) {
             return absl::InternalError("Unimplemented operation");
