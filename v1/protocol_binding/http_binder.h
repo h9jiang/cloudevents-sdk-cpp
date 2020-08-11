@@ -15,10 +15,10 @@ absl::StatusOr<std::string>
     Binder<boost::beast::http::request<boost::beast::http::string_body>>::
     GetContentType(HttpRequest& http_msg);
 
-// template <>
-// absl::StatusOr<std::string> 
-//     Binder<boost::beast::http::request<boost::beast::http::string_body>>::GetPayload(
-//     boost::beast::http::request<boost::beast::http::string_body>& pubsub_msg);
+template <>
+absl::StatusOr<std::string> 
+    Binder<boost::beast::http::request<boost::beast::http::string_body>>::GetPayload(
+    boost::beast::http::request<boost::beast::http::string_body>& pubsub_msg);
 
 // template <>
 // absl::StatusOr<io::cloudevents::v1::CloudEvent> 

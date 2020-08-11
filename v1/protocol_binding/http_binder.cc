@@ -25,5 +25,10 @@ absl::StatusOr<std::string> Binder<HttpRequest>::GetContentType(HttpRequest& htt
     return std::string(iter->value());
 }
 
+template <>
+absl::StatusOr<std::string> Binder<HttpRequest>::GetPayload(HttpRequest& http_req) {
+    return http_req.body();
+}
+
 } // binding
 } // cloudevents
