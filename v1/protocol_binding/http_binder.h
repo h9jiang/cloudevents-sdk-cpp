@@ -36,11 +36,11 @@ absl::Status
     boost::beast::http::request<boost::beast::http::string_body>& message, 
     std::string contenttype);
 
-// template <>
-// absl::Status 
-//     Binder<boost::beast::http::request<boost::beast::http::string_body>>::SetPayload(
-//     boost::beast::http::request<boost::beast::http::string_body>& message, 
-//     std::string payload);
+template <>
+absl::Status 
+    Binder<boost::beast::http::request<boost::beast::http::string_body>>::SetPayload(
+    boost::beast::http::request<boost::beast::http::string_body>& message, 
+    std::string payload);
 
 } // binding
 } // cloudevents

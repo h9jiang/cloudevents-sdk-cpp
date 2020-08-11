@@ -64,5 +64,12 @@ absl::Status Binder<HttpRequest>::SetContentType(HttpRequest& http_req,
     return absl::Status();
 }
 
+template <>
+absl::Status Binder<HttpRequest>::SetPayload(HttpRequest& http_req,
+        std::string payload) {
+    http_req.body() = payload;
+    return absl::Status();
+}
+
 } // binding
 } // cloudevents
