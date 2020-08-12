@@ -69,7 +69,7 @@ absl::Status CloudEventsUtil::SetMetadata(const std::string& key,
     if (!TimeUtil::FromString(val, &timestamp)) {
       return absl::InvalidArgumentError(kErrTimeInvalid);
     }
-    (*attr.mutable_ce_timestamp()) = timestamp;
+    *attr.mutable_ce_timestamp() = timestamp;
     (*cloud_event.mutable_attributes())[key] = attr;
   } else {
     // default assumes unrecognized attributes to be of type string
