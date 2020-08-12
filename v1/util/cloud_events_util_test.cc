@@ -3,7 +3,6 @@
 #include <google/protobuf/timestamp.pb.h>
 #include <google/protobuf/util/time_util.h>
 #include <gtest/gtest.h>
-#include <iostream>
 
 namespace cloudevents {
 namespace cloudevents_util {

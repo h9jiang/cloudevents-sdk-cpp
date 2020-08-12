@@ -36,7 +36,6 @@ class CloudEventsUtil {
   // ce-string is the default ce-type for unrecognized metadata
   static io::cloudevents::v1::CloudEvent_CloudEventAttribute ToCeString(
     const std::string& val);
-
 };
 
 }  // namespace cloudevents_util
