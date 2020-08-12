@@ -39,15 +39,10 @@ absl::StatusOr<
     cloud_event.attributes().end());
 
   // insert required attrs
-  CloudEvent_CloudEventAttribute attr_val;
-  attr_val.set_ce_string(cloud_event.id());
-  attrs["id"] = attr_val;
-  attr_val.set_ce_string(cloud_event.source());
-  attrs["source"] = attr_val;
-  attr_val.set_ce_string(cloud_event.spec_version());
-  attrs["spec_version"] = attr_val;
-  attr_val.set_ce_string(cloud_event.type());
-  attrs["type"] = attr_val;
+  attrs["id"] = ToCeString(cloud_event.id());
+  attrs["source"] = ToCeString(cloud_event.source());
+  attrs["spec_version"] = ToCeString(cloud_event.spec_version());
+  attrs["type"] = ToCeString(cloud_event.type());
 
   return attrs;
 }
@@ -104,6 +99,13 @@ absl::StatusOr<std::string> CloudEventsUtil::ToString(
       return absl::InvalidArgumentError(kErrAttrNotSet);
   }
   return absl::InternalError(kErrAttrNotHandled);
+}
+
+CloudEvent_CloudEventAttribute CloudEventsUtil::ToCeString(
+    const std::string& val) {
+  CloudEvent_CloudEventAttribute ce_str;
+  ce_str.set_ce_string(val);
+  return ce_str;
 }
 
 }  // namespace cloudevents_util

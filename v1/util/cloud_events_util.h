@@ -31,6 +31,12 @@ class CloudEventsUtil {
   // https://github.com/cloudevents/spec/blob/master/spec.md#type-system
   static absl::StatusOr<std::string> ToString(
     const io::cloudevents::v1::CloudEvent_CloudEventAttribute& attr);
+
+  // convert std::string to ce-string.
+  // ce-string is the default ce-type for unrecognized metadata
+  static io::cloudevents::v1::CloudEvent_CloudEventAttribute ToCeString(
+    const std::string& val);
+
 };
 
 }  // namespace cloudevents_util
