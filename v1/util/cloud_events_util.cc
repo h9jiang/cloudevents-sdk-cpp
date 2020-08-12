@@ -10,27 +10,23 @@ using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::google::protobuf::Timestamp;
 using ::google::protobuf::util::TimeUtil;
 
-constexpr char kErrCeInvalid[] = "Given Cloud Event is missing required attributes.";
-constexpr char kErrTimeInvalid[] = "Given time is invalid because it does not comply to RFC 3339.";
-constexpr char kErrAttrNotSet[] = "Given Cloud Event attribute is not set.";
-constexpr char kErrAttrNotHandled[] = "A Cloud Event type is not handled.";
-
 absl::Status CloudEventsUtil::IsValid(const CloudEvent& cloud_event) {
-  if (cloud_event.id().empty() ||
-      cloud_event.source().empty() ||
-      cloud_event.spec_version().empty() ||
-      cloud_event.type().empty()) {
-    return absl::InvalidArgumentError(kErrCeInvalid);
-  }
-  return absl::OkStatus();
+    if (cloud_event.id().empty() ||
+            cloud_event.source().empty() ||
+            cloud_event.spec_version().empty() ||
+            cloud_event.type().empty()) {
+        return absl::InvalidArgumentError("Given Cloud Event is missing required attributes.");
+    }
+    return absl::OkStatus();
 }
 
 absl::StatusOr<
-    absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute>>
-    CloudEventsUtil::GetMetadata(const CloudEvent& cloud_event) {
-  if (auto is_valid = CloudEventsUtil::IsValid(cloud_event); !is_valid.ok()) {
-    return is_valid;
-  }
+        absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute>>
+        CloudEventsUtil::GetMetadata(const CloudEvent& cloud_event) {
+    absl::Status is_valid = CloudEventsUtil::IsValid(cloud_event);
+    if (!is_valid.ok()) {
+        return is_valid;
+    }
 
   // create absl::flat_hash_map from protobuf map of optional/ extensionattrs
   absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute> attrs(
