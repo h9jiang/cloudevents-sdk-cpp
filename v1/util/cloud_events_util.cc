@@ -80,7 +80,7 @@ absl::Status CloudEventsUtil::SetMetadata(const std::string& key,
   return absl::OkStatus();
 }
 
-absl::StatusOr<std::string> CloudEventsUtil::StringifyCeType(
+absl::StatusOr<std::string> CloudEventsUtil::ToString(
     const CloudEvent_CloudEventAttribute& attr){
   switch (attr.attr_oneof_case()) {
     case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:

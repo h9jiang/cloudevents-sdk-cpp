@@ -205,89 +205,89 @@ TEST(CloudEventsUtilTest, SetMetadata_Time) {
   ASSERT_EQ(TimeUtil::ToString(attr.ce_timestamp()), timestamp_str);
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_BoolFalse) {
+TEST(CloudEventsUtilTest, ToString_BoolFalse) {
   CloudEvent_CloudEventAttribute attr;
   attr.set_ce_boolean(false);
   absl::StatusOr<std::string> stringify_ce_type;
 
-  stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  stringify_ce_type = CloudEventsUtil::ToString(attr);
 
   ASSERT_TRUE(stringify_ce_type.ok());
   ASSERT_EQ((*stringify_ce_type), "false");
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_BoolTrue) {
+TEST(CloudEventsUtilTest, ToString_BoolTrue) {
   CloudEvent_CloudEventAttribute attr;
   attr.set_ce_boolean(true);
   absl::StatusOr<std::string> stringify_ce_type;
 
-  stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  stringify_ce_type = CloudEventsUtil::ToString(attr);
 
   ASSERT_TRUE(stringify_ce_type.ok());
   ASSERT_EQ((*stringify_ce_type), "true");
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_Integer) {
+TEST(CloudEventsUtilTest, ToString_Integer) {
   CloudEvent_CloudEventAttribute attr;
   attr.set_ce_integer(88);
   absl::StatusOr<std::string> stringify_ce_type;
 
-  stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  stringify_ce_type = CloudEventsUtil::ToString(attr);
 
   ASSERT_TRUE(stringify_ce_type.ok());
   ASSERT_EQ((*stringify_ce_type), "88");
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_String) {
+TEST(CloudEventsUtilTest, ToString_String) {
   CloudEvent_CloudEventAttribute attr;
   attr.set_ce_string("test");
   absl::StatusOr<std::string> stringify_ce_type;
 
-  stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  stringify_ce_type = CloudEventsUtil::ToString(attr);
 
   ASSERT_TRUE(stringify_ce_type.ok());
   ASSERT_EQ((*stringify_ce_type), "test");
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_URI) {
+TEST(CloudEventsUtilTest, ToString_URI) {
   CloudEvent_CloudEventAttribute attr;
   attr.set_ce_uri("https://google.com");
   absl::StatusOr<std::string> stringify_ce_type;
 
-  stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  stringify_ce_type = CloudEventsUtil::ToString(attr);
 
   ASSERT_TRUE(stringify_ce_type.ok());
   ASSERT_EQ((*stringify_ce_type), "https://google.com");
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_URIRef) {
+TEST(CloudEventsUtilTest, ToString_URIRef) {
   CloudEvent_CloudEventAttribute attr;
   attr.set_ce_uri_reference("https://www.google.com/#fragment");
   absl::StatusOr<std::string> stringify_ce_type;
 
-  stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  stringify_ce_type = CloudEventsUtil::ToString(attr);
 
   ASSERT_TRUE(stringify_ce_type.ok());
   ASSERT_EQ((*stringify_ce_type), "https://www.google.com/#fragment");
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_Timestamp) {
+TEST(CloudEventsUtilTest, ToString_Timestamp) {
   Timestamp timestamp = TimeUtil::GetCurrentTime();
   std::string timestamp_str = TimeUtil::ToString(timestamp);
   CloudEvent_CloudEventAttribute attr;
   attr.mutable_ce_timestamp()-> MergeFrom(timestamp);
   absl::StatusOr<std::string> stringify_ce_type;
 
-  stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  stringify_ce_type = CloudEventsUtil::ToString(attr);
 
   ASSERT_EQ((*stringify_ce_type), timestamp_str);
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_NotSet) {
+TEST(CloudEventsUtilTest, ToString_NotSet) {
   CloudEvent_CloudEventAttribute attr;
   absl::StatusOr<std::string> stringify_ce_type;
 
-  stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  stringify_ce_type = CloudEventsUtil::ToString(attr);
 
   ASSERT_TRUE(absl::IsInvalidArgument(stringify_ce_type.status()));
 }
