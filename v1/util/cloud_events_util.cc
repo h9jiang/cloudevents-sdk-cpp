@@ -47,31 +47,31 @@ absl::StatusOr<
 }
 
 absl::Status CloudEventsUtil::SetMetadata(const std::string& key,
-    const std::string& val, CloudEvent& cloud_event){
-  // TODO (#39): Recognize URI and URI Reference types
-  if (key == "id") {
-    cloud_event.set_id(val);
-  } else if (key == "source") {
-    cloud_event.set_source(val);
-  } else if (key == "spec_version") {
-    cloud_event.set_spec_version(val);
-  } else if (key == "type") {
-    cloud_event.set_type(val);
-  } else if (key == "time") {
-    CloudEvent_CloudEventAttribute attr;
-    Timestamp timestamp;
-    if (!TimeUtil::FromString(val, &timestamp)) {
-      return absl::InvalidArgumentError(kErrTimeInvalid);
+        const std::string& val, CloudEvent& cloud_event){
+    // TODO (#39): Recognize URI and URI Reference types
+    if (key == "id") {
+        cloud_event.set_id(val);
+    } else if (key == "source") {
+        cloud_event.set_source(val);
+    } else if (key == "spec_version") {
+        cloud_event.set_spec_version(val);
+    } else if (key == "type") {
+        cloud_event.set_type(val);
+    } else if (key == "time") {
+        CloudEvent_CloudEventAttribute attr;
+        Timestamp timestamp;
+        if (!TimeUtil::FromString(val, &timestamp)) {
+            return absl::InvalidArgumentError("Time given is invalid because it does not comply to RFC 3339.");
+        }
+        (*attr.mutable_ce_timestamp()) = timestamp;
+        (*cloud_event.mutable_attributes())[key] = attr;
+    } else {
+        // default assumes unrecognized attributes to be of type string
+        CloudEvent_CloudEventAttribute attr;
+        attr.set_ce_string(val);
+        (*cloud_event.mutable_attributes())[key] = attr;
     }
-    *attr.mutable_ce_timestamp() = timestamp;
-    (*cloud_event.mutable_attributes())[key] = attr;
-  } else {
-    // default assumes unrecognized attributes to be of type string
-    CloudEvent_CloudEventAttribute attr;
-    attr.set_ce_string(val);
-    (*cloud_event.mutable_attributes())[key] = attr;
-  }
-  return absl::OkStatus();
+    return absl::OkStatus();
 }
 
 absl::StatusOr<std::string> CloudEventsUtil::ToString(
