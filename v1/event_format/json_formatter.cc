@@ -15,7 +15,7 @@ using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::google::protobuf::util::TimeUtil;
 using ::cloudevents::cloudevents_util::CloudEventsUtil;
 
-typedef absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute> 
+typedef absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute>
   CeAttrMap;
 
 constexpr char kJsonBinaryKey[] = "data_base64";
@@ -98,7 +98,8 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
 
   // TODO (#39): Should we try to infer CE Type from serialized_data?
   for (auto const& member : root.getMemberNames()) {
-    absl::Status set_metadata = CloudEventsUtil::SetMetadata(member, root[member].asString(),
+    absl::Status set_metadata = CloudEventsUtil::SetMetadata(member,
+      root[member].asString(),
       cloud_event);
     if (!set_metadata.ok()){
       return set_metadata;
