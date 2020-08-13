@@ -12,7 +12,7 @@ constexpr char kErrUnkFormatStr[] = "The given format is not recognized by the S
 constexpr char kErrUnkFormatter[] = "Could not find formatter for given format.";
 
 absl::StatusOr<Format> FormatterUtil::FormatFromString(
-    const std::string& format_str) {
+    absl::string_view format_str) {
   if (format_str == "json") {
     return Format::kJson;
   }
@@ -36,5 +36,5 @@ absl::StatusOr<std::unique_ptr<Formatter>> FormatterUtil::GetFormatter(
   return absl::InternalError(kErrUnkFormatter);
 }
 
-} // util
-} // cloudevents
+}  // namespace formatter_util
+}  // namespace cloudevents

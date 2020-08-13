@@ -15,18 +15,18 @@ class FormatterUtil {
   // Converts a given string to a cloudevents::format::Format
   // Throws InternalError() if string cannot be mapped succesfully.
   static absl::StatusOr<cloudevents::format::Format> FormatFromString(
-    const std::string& format_str);
+    absl::string_view format_str);
 
   // Converts a cloudevents::format::Format to its string representation
   static absl::StatusOr<std::string> FormatToString(
     const cloudevents::format::Format& format);
-  
+
   // Returns Formatter that handles the given Format
   static absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
     GetFormatter(const cloudevents::format::Format& format);
 };
 
-} // util
-} // cloudevents
+}  // namespace formatter_util
+}  // namespace cloudevents
 
-#endif //CLOUDEVENTSCPPSDK_V1_UTIL_FORMATTERUTIL
+#endif  // CLOUDEVENTSCPPSDK_V1_UTIL_FORMATTERUTIL
