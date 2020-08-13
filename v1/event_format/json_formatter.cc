@@ -64,7 +64,7 @@ absl::StatusOr<std::unique_ptr<StructuredCloudEvent>> JsonFormatter::Serialize(
 
   // Write JSON serialized data as std::string
   Json::StreamWriterBuilder builder;
-  auto structured_ce = absl::make_unique<StructuredCloudEvent>();;
+  auto structured_ce = absl::make_unique<StructuredCloudEvent>();
   (*structured_ce).format = Format::kJson;
   (*structured_ce).serialized_data = Json::writeString(builder, root);
 
@@ -98,8 +98,11 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
 
   // TODO (#39): Should we try to infer CE Type from serialized_data?
   for (auto const& member : root.getMemberNames()) {
-    CloudEventsUtil::SetMetadata(member, root[member].asString(),
+    absl::Status set_metadata = CloudEventsUtil::SetMetadata(member, root[member].asString(),
       cloud_event);
+    if (!set_metadata.ok()){
+      return set_metadata;
+    }
   }
 
   if (root.isMember(kJsonTextKey) && root.isMember(kJsonBinaryKey)) {
