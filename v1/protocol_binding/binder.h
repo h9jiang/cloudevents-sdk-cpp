@@ -45,15 +45,20 @@ class Binder {
       return get_formatter.status();
     }
     
-    absl::StatusOr<cloudevents::format::StructuredCloudEvent> serialization =
+    absl::StatusOr<std::unique_ptr<cloudevents::format::StructuredCloudEvent>> serialization =
       (*get_formatter)->Serialize(cloud_event);
     if (!serialization.ok()) {
       return serialization.status();
     }
 
+    absl::StatusOr<std::string> format_str = cloudevents::formatter_util::
+      FormatterUtil::FormatToStr((*serialization)->format);
+    if (!format_str.ok()) {
+        return format_str.status();
+    }
+
     std::string contenttype = kContenttypePrefix.data();
-    contenttype += cloudevents::formatter_util::FormatterUtil::FormatToStr(
-      (*serialization).format);
+    contenttype += *format_str;
       
     Message msg;
     absl::Status set_contenttype = SetContentType(msg, contenttype);
@@ -61,8 +66,7 @@ class Binder {
       return set_contenttype;
     }
 
-    absl::Status set_payload = SetPayload(msg, (*serialization).serialization);
-    if (auto set_payload = set_payload.ok(); !set_payload.ok()) {
+    if (auto set_payload = SetPayload(msg, (*serialization)->serialized_data); !set_payload.ok()) {
       return set_payload;
     }
   
@@ -75,16 +79,16 @@ class Binder {
     if (!contenttype.ok()) {
       return contenttype.status();
     }
-    if ((*contenttype).empty() || 
-        (*contenttype).rfind(kContenttypePrefix.data(), 0) != 0) {
+    if (contenttype->empty() || 
+        contenttype->rfind(kContenttypePrefix.data(), 0) != 0) {
       return UnbindBinary(message);
     }
 
-    std::string format_str = (*contenttype).erase(
+    std::string format_str = contenttype->erase(
       0, strlen(kContenttypePrefix.data()));
 
     absl::StatusOr<cloudevents::format::Format> format = cloudevents::formatter_util::
-      FormatterUtil::FormatFromString(format_str);
+      FormatterUtil::FormatFromStr(format_str);
     if (!format.ok()){
       return format.status();
     }
@@ -102,15 +106,15 @@ class Binder {
     }
 
     cloudevents::format::StructuredCloudEvent structured_cloud_event;
-    structured_cloud_event.format = (*format);
-    structured_cloud_event.serialization = (*get_payload);
+    structured_cloud_event.format = *format;
+    structured_cloud_event.serialized_data = *get_payload;
 
     absl::StatusOr<io::cloudevents::v1::CloudEvent> deserialization =
       (*get_formatter)->Deserialize(structured_cloud_event);
     if (!deserialization.ok()){
       return deserialization.status();
     }
-    return (*deserialization);
+    return *deserialization;
   }
 
 
