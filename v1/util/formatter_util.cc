@@ -30,8 +30,8 @@ absl::StatusOr<std::string> FormatterUtil::FormatToString(
 absl::StatusOr<std::unique_ptr<Formatter>> FormatterUtil::GetFormatter(
     const Format& format) {
   if (format == Format::kJson) {
-    auto m = new JsonFormatter;
-    return std::unique_ptr<Formatter>(m);
+    std::unique_ptr<Formatter> formatter = absl::make_unique<JsonFormatter>();
+    return formatter;
   }
   return absl::InternalError(kErrUnkFormatter);
 }
