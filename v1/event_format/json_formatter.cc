@@ -41,12 +41,12 @@ absl::StatusOr<std::unique_ptr<StructuredCloudEvent>> JsonFormatter::Serialize(
   }
 
   Json::Value root;
-  for (auto const& attr : (*attrs)) {
+  for (auto const& attr : *attrs) {
     absl::StatusOr<Json::Value> json_printed = PrintToJson(attr.second);
     if (!json_printed.ok()) {
       return json_printed.status();
     }
-    root[attr.first] = (*json_printed);
+    root[attr.first] = *json_printed;
   }
 
   switch (cloud_event.data_oneof_case()) {
