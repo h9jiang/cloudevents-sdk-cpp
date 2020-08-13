@@ -52,7 +52,7 @@ class Binder {
     }
 
     std::string contenttype = kContenttypePrefix.data();
-    contenttype += cloudevents::formatter_util::FormatterUtil::StringifyFormat(
+    contenttype += cloudevents::formatter_util::FormatterUtil::FormatToStr(
       (*serialization).format);
       
     Message msg;
@@ -83,9 +83,8 @@ class Binder {
     std::string format_str = (*contenttype).erase(
       0, strlen(kContenttypePrefix.data()));
 
-    absl::StatusOr<cloudevents::format::Format> format;
-    format = cloudevents::formatter_util::
-      FormatterUtil::DestringifyFormat(format_str);
+    absl::StatusOr<cloudevents::format::Format> format = cloudevents::formatter_util::
+      FormatterUtil::FormatFromString(format_str);
     if (!format.ok()){
       return format.status();
     }
