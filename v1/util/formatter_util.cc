@@ -21,19 +21,17 @@ absl::StatusOr<Format> FormatterUtil::FormatFromString(
 
 absl::StatusOr<std::string> FormatterUtil::FormatToString(
     const Format& format) {
-  switch (format) {
-    case Format::kJson:
-      return std::string("json");
+  if (format == Format::kJson) {
+    return std::string("json");
   }
   return absl::InternalError(kErrUnkFormat);
 }
 
 absl::StatusOr<std::unique_ptr<Formatter>> FormatterUtil::GetFormatter(
     const Format& format) {
-  switch (format) {
-    case Format::kJson:
-      auto m = new JsonFormatter;
-      return std::unique_ptr<Formatter>(m);
+  if (format == Format::kJson) {
+    auto m = new JsonFormatter;
+    return std::unique_ptr<Formatter>(m);
   }
   return absl::InternalError(kErrUnkFormatter);
 }
