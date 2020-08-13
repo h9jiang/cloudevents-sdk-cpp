@@ -46,7 +46,7 @@ class Binder {
     }
     
     absl::StatusOr<cloudevents::format::StructuredCloudEvent> serialization =
-      (*get_formatter) -> Serialize(cloud_event);
+      (*get_formatter)->Serialize(cloud_event);
     if (!serialization.ok()) {
       return serialization.status();
     }
@@ -107,7 +107,7 @@ class Binder {
     structured_cloud_event.serialization = (*get_payload);
 
     absl::StatusOr<io::cloudevents::v1::CloudEvent> deserialization =
-      (*get_formatter) -> Deserialize(structured_cloud_event);
+      (*get_formatter)->Deserialize(structured_cloud_event);
     if (!deserialization.ok()){
       return deserialization.status();
     }
