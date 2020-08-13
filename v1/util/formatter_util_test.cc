@@ -21,7 +21,8 @@ TEST(FormatterUtilTest, FormatFromString_Invalid) {
 }
 
 TEST(FormatterUtilTest, FormatToString_Json) {
-  absl::StatusOr<std::string> format_str = FormatterUtil::FormatToString(Format::kJson);
+  absl::StatusOr<std::string> format_str = FormatterUtil::FormatToString(
+    Format::kJson);
   ASSERT_TRUE(format_str.ok());
   ASSERT_EQ(*format_str, "json");
 }
@@ -30,8 +31,9 @@ TEST(FormatterUtilTest, GetFormatter_Json) {
   absl::StatusOr<std::unique_ptr<Formatter>> get_formatter;
   get_formatter = FormatterUtil::GetFormatter(Format::kJson);
   ASSERT_TRUE(get_formatter.ok());
-  ASSERT_EQ(typeid(**get_formatter), typeid(JsonFormatter));  // dereference twice
+  // dereference twice
+  ASSERT_EQ(typeid(**get_formatter), typeid(JsonFormatter));
 }
 
-} // util
-} // cloudevents
+}  // namespace formatter_util
+}  // namespace cloudevents
