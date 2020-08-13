@@ -79,15 +79,14 @@ TEST(Unbind, Structured_Required) {
     Binder<HttpRequest> binder;
     HttpRequest http_req;
     http_req.base().set("content-type", "application/cloudevents+json");
-    http_req.body() = "e1xuXHRcImlkXCIgOiBcIjFcIixcblx0XCJzb3VyY2VcIiA6IFwiMlwiLFxuXHRcInNwZWNfdmVyc2lvblwiIDogXCIzXCIsXG5cdFwidHlwZVwiIDogXCI0XCJcbn0=";
+    http_req.body() = "{\n\t\"id\" : \"1\",\n\t\"source\" : \"/test\",\n\t\"spec_version\" : \"1.0\",\n\t\"type\" : \"test\"\n}";
     unbind = binder.Unbind(http_req);
     ASSERT_TRUE(unbind.ok());
     ASSERT_EQ((*unbind).id(), "1");
-    ASSERT_EQ((*unbind).source(), "2");
-    ASSERT_EQ((*unbind).spec_version(), "3");
-    ASSERT_EQ((*unbind).type(), "4");
+    ASSERT_EQ((*unbind).source(), "/test");
+    ASSERT_EQ((*unbind).spec_version(), "1.0");
+    ASSERT_EQ((*unbind).type(), "test");
 }
-
 
 } // binding
 } // cloudevents
