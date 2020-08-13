@@ -12,6 +12,7 @@ cc_library(
         "//proto:cloud_event_cc_proto",
         "//third_party/statusor:statusor_lib",
         "@com_github_open_source_parsers_jsoncpp//:jsoncpp",
+        "//v1/util:cloud_events_util_lib",
     ],
 )
 

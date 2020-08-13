@@ -5,152 +5,142 @@
 #include <google/protobuf/util/json_util.h>
 #include <google/protobuf/util/time_util.h>
 
+#include "v1/util/cloud_events_util.h"
+
 namespace cloudevents {
 namespace format {
 
 using ::io::cloudevents::v1::CloudEvent;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::google::protobuf::util::TimeUtil;
+using ::cloudevents::cloudevents_util::CloudEventsUtil;
 
-// TODO (#41): Move this to a CE Util, as it is used across formatters/ binders
-static constexpr absl::string_view kCeIdKey = "id";
-static constexpr absl::string_view kCeSourceKey = "source";
-static constexpr absl::string_view kCeSpecKey = "spec_version";
-static constexpr absl::string_view kCeTypeKey = "type";
+typedef absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute> 
+  CeAttrMap;
 
-static constexpr absl::string_view kBinaryDataKey = "data_base64";
-static constexpr absl::string_view kJsonDataKey = "data";
+constexpr char kJsonBinaryKey[] = "data_base64";
+constexpr char kJsonTextKey[] = "data";
 
-absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(CloudEvent_CloudEventAttribute attr){    
-    switch (attr.attr_oneof_case()) {
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
-            return Json::Value(attr.ce_boolean());
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeInteger:
-            return Json::Value(attr.ce_integer());
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeString:
-            return Json::Value(attr.ce_string());
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBinary:
-            return Json::Value(attr.ce_binary());
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUri:
-            return Json::Value(attr.ce_uri());
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUriReference:
-            return Json::Value(attr.ce_uri_reference());
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeTimestamp:
-            return Json::Value(TimeUtil::ToString(attr.ce_timestamp()));
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::ATTR_ONEOF_NOT_SET:
-            return absl::InvalidArgumentError("Cloud Event metadata attribute not set.");
+// Error statuses
+constexpr char kErrProtobufAny[] = "protobuf::Any not supported yet.";
+constexpr char kErrNotJson[] = "The given serialized data should not be handled by JsonFormatter because it is not JSON-formatted.";
+constexpr char kErrTwoPayloads[] = "The given serialized data is invalid because it contains two data payloads.";
+
+absl::StatusOr<std::unique_ptr<StructuredCloudEvent>> JsonFormatter::Serialize(
+    const CloudEvent& cloud_event) {
+  absl::Status is_valid = CloudEventsUtil::IsValid(cloud_event);
+  if (!is_valid.ok()) {
+    return is_valid;
+  }
+
+  absl::StatusOr<CeAttrMap> attrs = CloudEventsUtil::GetMetadata(
+    cloud_event);
+  if (!attrs.ok()) {
+    return attrs.status();
+  }
+
+  Json::Value root;
+  for (auto const& attr : (*attrs)) {
+    absl::StatusOr<Json::Value> json_printed = PrintToJson(attr.second);
+    if (!json_printed.ok()) {
+      return json_printed.status();
     }
-    return absl::InternalError("A Cloud Event attribute has not been handled.");
+    root[attr.first] = (*json_printed);
+  }
+
+  switch (cloud_event.data_oneof_case()) {
+    case CloudEvent::DataOneofCase::kBinaryData:
+      root[kJsonBinaryKey] = cloud_event.binary_data();
+      break;
+    case CloudEvent::DataOneofCase::kTextData:
+      root[kJsonTextKey] = cloud_event.text_data();
+      break;
+    case CloudEvent::DataOneofCase::kProtoData:
+      // TODO (#17): Handle CloudEvent Any in JsonFormatter
+      return absl::UnimplementedError(kErrProtobufAny);
+    case CloudEvent::DATA_ONEOF_NOT_SET:
+      break;
+  }
+
+  // Write JSON serialized data as std::string
+  Json::StreamWriterBuilder builder;
+  auto structured_ce = absl::make_unique<StructuredCloudEvent>();;
+  (*structured_ce).format = Format::kJson;
+  (*structured_ce).serialized_data = Json::writeString(builder, root);
+
+  return structured_ce;
 }
 
-absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(CloudEvent cloud_event) {
-    // validate CloudEvent by ensuring all required metadata is present
-    if (cloud_event.id().empty() || 
-            cloud_event.source().empty() || 
-            cloud_event.spec_version().empty() ||
-            cloud_event.type().empty()) {
-        return absl::InvalidArgumentError("Required attribute in Cloud Event cannot be empty");
-    }
+absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
+    const StructuredCloudEvent& structured_ce) {
+  // Validate that this is the right format to be handled by this object
+  if (structured_ce.format != Format::kJson) {
+    return absl::InternalError(kErrNotJson);
+  }
 
-    Json::Value root;
-    root[kCeIdKey.data()] = cloud_event.id();
-    root[kCeSourceKey.data()] = cloud_event.source();
-    root[kCeSpecKey.data()] = cloud_event.spec_version();
-    root[kCeTypeKey.data()] = cloud_event.type();
+  // Create a Json::Value from the serialized data string
+  std::string serialized_data = structured_ce.serialized_data;
+  Json::CharReaderBuilder builder;
+  Json::CharReader * reader = builder.newCharReader();
+  std::string errors;
+  Json::Value root;
 
-    for (auto const& attr : cloud_event.attributes()) {
-        absl::StatusOr<Json::Value> json_printed = PrintToJson(attr.second);
-        if (!json_printed.ok()) {
-            return json_printed.status();
-        }
-        root[attr.first] = (*json_printed);
-    }
+  bool parsingSuccessful = reader->parse(
+    serialized_data.c_str(),
+    serialized_data.c_str() + serialized_data.size(),
+    &root,
+    &errors);
+  if (!parsingSuccessful) {
+    return absl::InvalidArgumentError(errors);
+  }
 
-    switch (cloud_event.data_oneof_case()) {
-        case CloudEvent::DataOneofCase::kBinaryData:
-            root[kBinaryDataKey.data()] = cloud_event.binary_data();
-            break;
-        case CloudEvent::DataOneofCase::kTextData:
-            root[kJsonDataKey.data()] = cloud_event.text_data();
-            break;
-        case CloudEvent::DataOneofCase::kProtoData:
-            // TODO (#17): Handle CloudEvent Any in JsonFormatter
-            return absl::UnimplementedError("protobuf::Any not supported yet.");
-        case CloudEvent::DATA_ONEOF_NOT_SET:
-            break;
-    }
+  CloudEvent cloud_event;
 
-    // Write JSON serialization as std::string
-    Json::StreamWriterBuilder builder;
-    StructuredCloudEvent structured_ce;
-    structured_ce.format = Format::kJson;
-    structured_ce.serialization = Json::writeString(builder, root);
-    return structured_ce;
+  // TODO (#39): Should we try to infer CE Type from serialized_data?
+  for (auto const& member : root.getMemberNames()) {
+    CloudEventsUtil::SetMetadata(member, root[member].asString(),
+      cloud_event);
+  }
+
+  if (root.isMember(kJsonTextKey) && root.isMember(kJsonBinaryKey)) {
+    return absl::InvalidArgumentError(kErrTwoPayloads);
+  } else if (root.isMember(kJsonTextKey)) {
+    cloud_event.set_text_data(root[kJsonTextKey].asString());
+  } else if (root.isMember(kJsonBinaryKey)) {
+    cloud_event.set_binary_data(root[kJsonBinaryKey].asString());
+  }
+
+  absl::Status is_valid = CloudEventsUtil::IsValid(cloud_event);
+  if (!is_valid.ok()) {
+    return is_valid;
+  }
+
+  return cloud_event;
 }
 
-absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent structured_cloud_event) {
-    // Validate that this is the right format to be handled by this object
-    if (structured_cloud_event.format != Format::kJson) {
-        return absl::InternalError(
-            "This structured cloud event is not JSON formatted and should not be handled by a Json Formatter.");
-    }
-
-    // Create a Json::Value from the serialization string
-    std::string serialization = structured_cloud_event.serialization;
-    Json::CharReaderBuilder builder;
-    Json::CharReader * reader = builder.newCharReader();
-    std::string errors;
-    Json::Value root;   
-
-    bool parsingSuccessful = reader->parse(
-        serialization.c_str(), 
-        serialization.c_str() + serialization.size(), 
-        &root, 
-        &errors);
-        
-    if (!parsingSuccessful) {
-        return absl::InvalidArgumentError(errors);
-    }
-
-
-    // check that serialization contains a valid CE
-    if (!root.isMember(kCeIdKey.data()) || 
-            !root.isMember(kCeSourceKey.data()) || 
-            !root.isMember(kCeSpecKey.data()) || 
-            !root.isMember(kCeTypeKey.data())) { // using isMember to avoid creating null member in JsonCpp
-        return absl::InvalidArgumentError(
-            "Provided input is missing required Cloud Event attributes.");
-    }
-
-    CloudEvent cloud_event;
-    
-    for (auto const& member : root.getMemberNames()) {
-        if (member == kCeIdKey.data()) {
-            cloud_event.set_id(root[member].asString());
-        } else if (member == kCeSourceKey.data()) {
-            cloud_event.set_source(root[member].asString());
-        } else if (member == kCeSpecKey.data()) {
-            cloud_event.set_spec_version(root[member].asString());
-        } else if (member == kCeTypeKey.data()) {
-            cloud_event.set_type(root[member].asString());
-        } else {
-            CloudEvent_CloudEventAttribute attr;
-            attr.set_ce_string(root[member].asString());
-            (*cloud_event.mutable_attributes())[member] = attr;
-        }
-    }
-
-    if (root.isMember(kJsonDataKey.data()) && root.isMember(kBinaryDataKey.data())) {
-        return absl::InvalidArgumentError(
-            "Provided input contains two data payloads and is an invalid serialization.");
-    } else if (root.isMember(kJsonDataKey.data())) {
-        cloud_event.set_text_data(root[kJsonDataKey.data()].asString());
-    } else if (root.isMember(kBinaryDataKey.data())) {
-        cloud_event.set_binary_data(root[kBinaryDataKey.data()].asString());
-    }
-
-    return cloud_event;
+absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(
+    const CloudEvent_CloudEventAttribute& attr){
+  switch (attr.attr_oneof_case()) {
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
+      return Json::Value(attr.ce_boolean());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeInteger:
+      return Json::Value(attr.ce_integer());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeString:
+      return Json::Value(attr.ce_string());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBinary:
+      return Json::Value(attr.ce_binary());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUri:
+      return Json::Value(attr.ce_uri());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUriReference:
+      return Json::Value(attr.ce_uri_reference());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeTimestamp:
+      return Json::Value(TimeUtil::ToString(attr.ce_timestamp()));
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::ATTR_ONEOF_NOT_SET:
+      return absl::InvalidArgumentError(
+        "Cloud Event metadata attribute not set.");
+  }
+  return absl::InternalError("A Cloud Event attribute was not handled.");
 }
 
-} // format
-} // cloudevents
+}  // namespace format
+}  // namespace cloudevents
