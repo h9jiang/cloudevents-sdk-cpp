@@ -11,7 +11,7 @@ constexpr char kErrUnkFormat[] = "A Format has not been handled.";
 constexpr char kErrUnkFormatStr[] = "The given format is not recognized by the SDK.";
 constexpr char kErrUnkFormatter[] = "Could not find formatter for given format.";
 
-absl::StatusOr<Format> FormatterUtil::FormatFromString(
+absl::StatusOr<Format> FormatterUtil::FormatFromStr(
     absl::string_view format_str) {
   if (format_str == "json") {
     return Format::kJson;
@@ -19,7 +19,7 @@ absl::StatusOr<Format> FormatterUtil::FormatFromString(
   return absl::InvalidArgumentError(kErrUnkFormatStr);
 }
 
-absl::StatusOr<std::string> FormatterUtil::FormatToString(
+absl::StatusOr<std::string> FormatterUtil::FormatToStr(
     const Format& format) {
   if (format == Format::kJson) {
     return std::string("json");
