@@ -22,6 +22,10 @@ class Formatter {
   // Marshal a StructuredCloudEvent into a CloudEvent
   virtual absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(
     const StructuredCloudEvent& structured_cloud_event) = 0;
+
+  // Pure virtual destructor as any class with virtual functions
+  // should have a virtual destructor
+  virtual ~Formatter(){};
 };
 
 }  // namespace format
