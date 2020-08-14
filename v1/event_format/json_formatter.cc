@@ -18,6 +18,7 @@ using ::cloudevents::cloudevents_util::CloudEventsUtil;
 typedef absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute>
   CeAttrMap;
 
+// Attribute keys
 constexpr char kJsonBinaryKey[] = "data_base64";
 constexpr char kJsonTextKey[] = "data";
 
@@ -81,7 +82,7 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
   // Create a Json::Value from the serialized data string
   std::string serialized_data = structured_ce.serialized_data;
   Json::CharReaderBuilder builder;
-  Json::CharReader * reader = builder.newCharReader();
+  Json::CharReader* reader = builder.newCharReader();
   std::string errors;
   Json::Value root;
 
