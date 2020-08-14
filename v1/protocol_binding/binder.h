@@ -146,7 +146,7 @@ class Binder {
 
     // Unbind Structured-ContentMode Message
     std::string format_str = contenttype->erase(
-      0, strlen(kContenttypePrefix));
+      0, kContenttypePrefix.length());
 
     absl::StatusOr<cloudevents::format::Format> format =
       cloudevents::formatter_util::FormatterUtil::FormatFromStr(format_str);
@@ -182,9 +182,9 @@ class Binder {
 // will be overriden for each supported ProtocolBinding
  private:
   // Const keys used accross ProtocolBindings
-  inline static constexpr char kMetadataPrefix[] = "ce-";
-  inline static constexpr char kContenttypePrefix[] = "application/cloudevents+";
-  inline static constexpr char kContenttypeKey[] = "datacontenttype";
+  inline static const std::string kMetadataPrefix = "ce-";
+  inline static const std::string kContenttypePrefix = "application/cloudevents+";
+  inline static const std::string kContenttypeKey = "datacontenttype";
 
   // _____ Operations used in Unbind Structured _____
 
