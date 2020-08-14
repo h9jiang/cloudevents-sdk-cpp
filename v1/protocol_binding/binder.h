@@ -2,7 +2,7 @@
 #define CLOUDEVENTSCPPSDK_V1_BINDING_BINDER_H
 
 #include <memory>
-#include <regex> 
+// #include <regex>
 
 #include <google/protobuf/message.h>
 
@@ -37,16 +37,19 @@ class Binder {
     return BindBinary(cloud_event);
   }
 
-  // Create StructuredContentMode Message containing Format-serialized CloudEvent  
-  absl::StatusOr<Message> Bind(io::cloudevents::v1::CloudEvent cloud_event, cloudevents::format::Format format) {
-    absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>> get_formatter;
-    get_formatter = cloudevents::formatter_util::FormatterUtil::GetFormatter(format);
+  // Create StructuredContentMode Message
+  // containing Format-serialized CloudEventS
+  absl::StatusOr<Message> Bind(io::cloudevents::v1::CloudEvent cloud_event,
+      cloudevents::format::Format format) {
+    absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
+      get_formatter = cloudevents::formatter_util::FormatterUtil::
+      GetFormatter(format);
     if (!get_formatter.ok()) {
       return get_formatter.status();
     }
-    
-    absl::StatusOr<std::unique_ptr<cloudevents::format::StructuredCloudEvent>> serialization =
-      (*get_formatter)->Serialize(cloud_event);
+
+    absl::StatusOr<std::unique_ptr<cloudevents::format::StructuredCloudEvent>>
+      serialization = (*get_formatter)->Serialize(cloud_event);
     if (!serialization.ok()) {
       return serialization.status();
     }
@@ -57,19 +60,20 @@ class Binder {
         return format_str.status();
     }
 
-    std::string contenttype = kContenttypePrefix.data();
+    std::string contenttype = kContenttypePrefix;
     contenttype += *format_str;
-      
+
     Message msg;
     absl::Status set_contenttype = SetContentType(msg, contenttype);
     if (!set_contenttype.ok()) {
       return set_contenttype;
     }
 
-    if (auto set_payload = SetPayload(msg, (*serialization)->serialized_data); !set_payload.ok()) {
+    if (auto set_payload = SetPayload(msg, (*serialization)->serialized_data);
+        !set_payload.ok()) {
       return set_payload;
     }
-  
+
     return msg;
   }
 
@@ -79,16 +83,16 @@ class Binder {
     if (!contenttype.ok()) {
       return contenttype.status();
     }
-    if (contenttype->empty() || 
-        contenttype->rfind(kContenttypePrefix.data(), 0) != 0) {
+    if (contenttype->empty() ||
+        contenttype->rfind(kContenttypePrefix, 0) != 0) {
       return UnbindBinary(message);
     }
 
     std::string format_str = contenttype->erase(
-      0, strlen(kContenttypePrefix.data()));
+      0, strlen(kContenttypePrefix));
 
-    absl::StatusOr<cloudevents::format::Format> format = cloudevents::formatter_util::
-      FormatterUtil::FormatFromStr(format_str);
+    absl::StatusOr<cloudevents::format::Format> format =
+      cloudevents::formatter_util::FormatterUtil::FormatFromStr(format_str);
     if (!format.ok()){
       return format.status();
     }
@@ -99,8 +103,9 @@ class Binder {
       return get_payload.status();
     }
 
-    absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>> get_formatter;
-    get_formatter = cloudevents::formatter_util::FormatterUtil::GetFormatter(*format);
+    absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
+      get_formatter = cloudevents::formatter_util::FormatterUtil::
+      GetFormatter(*format);
     if (!get_formatter.ok()) {
       return get_formatter.status();
     }
@@ -121,15 +126,15 @@ class Binder {
 // The following operations are protocol-specific and
 // will be overriden for each supported ProtocolBinding
  private:
-  // Constexpr keys used accross ProtocolBindings
-  static inline constexpr absl::string_view kMetadataPrefix = "ce-";
-  static inline constexpr absl::string_view kContenttypePrefix = "application/cloudevents+";
-  static inline constexpr absl::string_view kContenttypeKey = "datacontenttype";
+  // Const keys used accross ProtocolBindings
+  inline static constexpr char kMetadataPrefix[] = "ce-";
+  inline static constexpr char kContenttypePrefix[] = "application/cloudevents+";
+  inline static constexpr char kContenttypeKey[] = "datacontenttype";
 
   absl::StatusOr<std::string> GetContentType(Message& message) {
     return absl::InternalError("Unimplemented operation");
   }
-  
+
   absl::StatusOr<std::string> GetPayload(Message& message) {
     return absl::InternalError("Unimplemented operation");
   }
@@ -137,7 +142,8 @@ class Binder {
   // TODO (#52): Refactor Unbind/Bind Binary into several
   // protocol specific getters/ setters
   // Marshals a BinaryContentMode message into a CloudEvent
-  absl::StatusOr<io::cloudevents::v1::CloudEvent> UnbindBinary(Message& binary_message) {
+  absl::StatusOr<io::cloudevents::v1::CloudEvent> UnbindBinary(
+      Message& binary_message) {
     return absl::InternalError("Unimplemented operation");
   }
 
@@ -152,12 +158,13 @@ class Binder {
   }
 
   // Marshals a CloudEvent into a BinaryContentMode message
-  absl::StatusOr<Message> BindBinary(io::cloudevents::v1::CloudEvent& cloud_event) {
+  absl::StatusOr<Message> BindBinary(
+      io::cloudevents::v1::CloudEvent& cloud_event) {
     return absl::InternalError("Unimplemented operation");
   }
 };
 
-} // format
-} // cloudevents
+}  // namespace binding
+}  // namespace cloudevents
 
-#endif // CLOUDEVENTSCPPSDK_V1_BINDING_BINDER_H
+#endif  // CLOUDEVENTSCPPSDK_V1_BINDING_BINDER_H
