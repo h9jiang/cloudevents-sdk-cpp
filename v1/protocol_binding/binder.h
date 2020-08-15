@@ -83,6 +83,11 @@ class Binder {
   // containing Format-serialized CloudEvents
   absl::StatusOr<Message> Bind(const io::cloudevents::v1::CloudEvent& cloud_event,
       const cloudevents::format::Format& format) {
+    if (auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(
+        cloud_event); !valid.ok()) {
+      return valid;
+    }
+
     absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
       get_formatter = cloudevents::formatter_util::FormatterUtil::
       GetFormatter(format);
@@ -175,6 +180,12 @@ class Binder {
     if (!deserialization.ok()){
       return deserialization.status();
     }
+
+    if (auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(
+        *deserialization); !valid.ok()) {
+      return valid;
+    }
+
     return *deserialization;
   }
 
