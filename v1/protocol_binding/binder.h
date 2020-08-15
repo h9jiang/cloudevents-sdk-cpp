@@ -76,6 +76,52 @@ class Binder {
     return msg;
   }
 
+  // Create Structured-ContentMode Message
+  // containing Format-serialized CloudEvents
+  absl::StatusOr<Message> Bind(
+      const io::cloudevents::v1::CloudEvent& cloud_event,
+      const cloudevents::format::Format& format) {
+    if (auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(
+        cloud_event); !valid.ok()) {
+      return valid;
+    }
+
+    absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
+      get_formatter = cloudevents::formatter_util::FormatterUtil::
+      GetFormatter(format);
+    if (!get_formatter.ok()) {
+      return get_formatter.status();
+    }
+
+    absl::StatusOr<std::unique_ptr<cloudevents::format::StructuredCloudEvent>>
+      serialization = (*get_formatter)->Serialize(cloud_event);
+    if (!serialization.ok()) {
+      return serialization.status();
+    }
+
+    absl::StatusOr<std::string> format_str = cloudevents::formatter_util::
+      FormatterUtil::FormatToStr((*serialization)->format);
+    if (!format_str.ok()) {
+        return format_str.status();
+    }
+
+    std::string contenttype = kContenttypePrefix;
+    contenttype += *format_str;
+
+    Message msg;
+    absl::Status set_contenttype = BindContentType(contenttype, msg);
+    if (!set_contenttype.ok()) {
+      return set_contenttype;
+    }
+
+    if (auto set_payload = BindDataStructured(
+        (*serialization)->serialized_data, msg); !set_payload.ok()) {
+      return set_payload;
+    }
+
+    return msg;
+  }
+
 // The following operations are protocol-specific and
 // will be overriden for each supported ProtocolBinding
  private:
