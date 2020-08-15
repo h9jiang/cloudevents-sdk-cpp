@@ -29,7 +29,53 @@ namespace binding {
 template <typename Message>
 class Binder {
  public:
- 
+  // Create Binary-ContentMode Message containing CloudEvent
+  absl::StatusOr<Message> Bind(
+      const io::cloudevents::v1::CloudEvent& cloud_event) {
+    if (auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(
+        cloud_event); !valid.ok()) {
+      return valid;
+    }
+
+    Message msg;
+
+    absl::StatusOr<absl::flat_hash_map<
+      std::string, io::cloudevents::v1::CloudEvent_CloudEventAttribute>>
+      attrs = cloudevents::cloudevents_util::CloudEventsUtil::
+      GetMetadata(cloud_event);
+
+    if (!attrs.ok()) {
+      return attrs.status();
+    }
+
+    for (auto const& attr : (*attrs)) {
+      std::string key = kMetadataPrefix + attr.first;
+      if (auto is_md = BindMetadata(key, attr.second, msg); !is_md.ok()) {
+        return is_md;
+      }
+    }
+
+    switch (cloud_event.data_oneof_case()) {
+      case io::cloudevents::v1::CloudEvent::DataOneofCase::kBinaryData:
+        if (auto set_bin_data = BindDataBinary(cloud_event.binary_data(), msg);
+          !set_bin_data.ok()) {
+          return set_bin_data;
+        }
+      case io::cloudevents::v1::CloudEvent::DataOneofCase::kTextData:
+        if (auto set_text_data = BindDataText(cloud_event.text_data(), msg);
+          !set_text_data.ok()) {
+          return set_text_data;
+        }
+      case io::cloudevents::v1::CloudEvent::DataOneofCase::kProtoData:
+        // TODO (#17): CloudEvent Any in JsonFormatter
+        return absl::UnimplementedError("protobuf::Any not supported yet.");
+      case io::cloudevents::v1::CloudEvent::DATA_ONEOF_NOT_SET:
+        break;
+    }
+
+    return msg;
+  }
+
 // The following operations are protocol-specific and
 // will be overriden for each supported ProtocolBinding
  private:
