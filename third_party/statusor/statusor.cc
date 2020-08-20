@@ -29,6 +29,8 @@ namespace absl {
 
 namespace internal_statusor {
 
+namespace sdk {
+
 void Helper::HandleInvalidStatusCtorArg(absl::Status* status) {
   const char* kMessage = "An OK status is not a valid constructor argument to StatusOr<T>";
   //ASSERT(false, kMessage);
@@ -37,6 +39,8 @@ void Helper::HandleInvalidStatusCtorArg(absl::Status* status) {
 }
 
 void Helper::Crash(const absl::Status&) { abort(); }
+
+} // namespace sdk
 
 } // namespace internal_statusor
 

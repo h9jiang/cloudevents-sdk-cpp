@@ -84,12 +84,12 @@ namespace absl {
 template <typename T> class ABSL_MUST_USE_RESULT StatusOr;
 
 template <typename T>
-class StatusOr : private internal_statusor::StatusOrData<T>,
-                 private internal_statusor::TraitsBase<std::is_copy_constructible<T>::value,
+class StatusOr : private internal_statusor::sdk::StatusOrData<T>,
+                 private internal_statusor::sdk::TraitsBase<std::is_copy_constructible<T>::value,
                                                        std::is_move_constructible<T>::value> {
   template <typename U> friend class StatusOr;
 
-  typedef internal_statusor::StatusOrData<T> Base;
+  typedef internal_statusor::sdk::StatusOrData<T> Base;
 
 public:
   using element_type = T;
