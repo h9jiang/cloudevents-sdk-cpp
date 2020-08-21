@@ -2,13 +2,14 @@
 #define CLOUDEVENTSCPPSDK_V1_BINDING_BINDER_H
 
 #include <memory>
+// #include <regex>
 
 #include <google/protobuf/message.h>
 
 #include "third_party/statusor/statusor.h"
 #include "third_party/base64/base64.h"
 #include "proto/cloud_event.pb.h"
-#include "google/pubsub/v1/pubsub.pb.h"
+#include "external/googleapis/google/pubsub/v1/pubsub.pb.h"
 #include "v1/event_format/structured_cloud_event.h"
 #include "v1/event_format/json_formatter.h"
 #include "v1/util/formatter_util.h"
@@ -32,7 +33,7 @@ template <typename Message>
 class Binder {
  public:
   // Create Binary-ContentMode Message containing CloudEvent
-  absl::StatusOr<Message> Bind(
+  cloudevents_absl::StatusOr<Message> Bind(
       const io::cloudevents::v1::CloudEvent& cloud_event) {
     if (auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(
         cloud_event); !valid.ok()) {
@@ -41,7 +42,7 @@ class Binder {
 
     Message msg;
 
-    absl::StatusOr<absl::flat_hash_map<
+    cloudevents_absl::StatusOr<absl::flat_hash_map<
       std::string, io::cloudevents::v1::CloudEvent_CloudEventAttribute>>
       attrs = cloudevents::cloudevents_util::CloudEventsUtil::
       GetMetadata(cloud_event);
@@ -80,27 +81,31 @@ class Binder {
 
   // Create Structured-ContentMode Message
   // containing Format-serialized CloudEvents
+<<<<<<< HEAD
   absl::StatusOr<Message> Bind(const io::cloudevents::v1::CloudEvent& cloud_event,
+=======
+  cloudevents_absl::StatusOr<Message> Bind(const io::cloudevents::v1::CloudEvent& cloud_event,
+>>>>>>> upstream/binder-all
       const cloudevents::format::Format& format) {
     if (auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(
         cloud_event); !valid.ok()) {
       return valid;
     }
 
-    absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
+    cloudevents_absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
       get_formatter = cloudevents::formatter_util::FormatterUtil::
       GetFormatter(format);
     if (!get_formatter.ok()) {
       return get_formatter.status();
     }
 
-    absl::StatusOr<std::unique_ptr<cloudevents::format::StructuredCloudEvent>>
+    cloudevents_absl::StatusOr<std::unique_ptr<cloudevents::format::StructuredCloudEvent>>
       serialization = (*get_formatter)->Serialize(cloud_event);
     if (!serialization.ok()) {
       return serialization.status();
     }
 
-    absl::StatusOr<std::string> format_str = cloudevents::formatter_util::
+    cloudevents_absl::StatusOr<std::string> format_str = cloudevents::formatter_util::
       FormatterUtil::FormatToStr((*serialization)->format);
     if (!format_str.ok()) {
         return format_str.status();
@@ -124,8 +129,8 @@ class Binder {
   }
 
   // Create CloudEvent from given Message
-  absl::StatusOr<io::cloudevents::v1::CloudEvent> Unbind(const Message& message) {
-    absl::StatusOr<std::string> contenttype = GetContentType(message);
+  cloudevents_absl::StatusOr<io::cloudevents::v1::CloudEvent> Unbind(const Message& message) {
+    cloudevents_absl::StatusOr<std::string> contenttype = GetContentType(message);
     if (!contenttype.ok()) {
       return contenttype.status();
     }
@@ -152,18 +157,18 @@ class Binder {
     std::string format_str = contenttype->erase(
       0, kContenttypePrefix.length());
 
-    absl::StatusOr<cloudevents::format::Format> format =
+    cloudevents_absl::StatusOr<cloudevents::format::Format> format =
       cloudevents::formatter_util::FormatterUtil::FormatFromStr(format_str);
     if (!format.ok()){
       return format.status();
     }
 
-    absl::StatusOr<std::string> get_payload = GetPayload(message);
+    cloudevents_absl::StatusOr<std::string> get_payload = GetPayload(message);
     if (!get_payload.ok()) {
       return get_payload.status();
     }
 
-    absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
+    cloudevents_absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
       get_formatter = cloudevents::formatter_util::FormatterUtil::
       GetFormatter(*format);
     if (!get_formatter.ok()) {
@@ -174,7 +179,7 @@ class Binder {
     structured_cloud_event.format = *format;
     structured_cloud_event.serialized_data = *get_payload;
 
-    absl::StatusOr<io::cloudevents::v1::CloudEvent> deserialization =
+    cloudevents_absl::StatusOr<io::cloudevents::v1::CloudEvent> deserialization =
       (*get_formatter)->Deserialize(structured_cloud_event);
     if (!deserialization.ok()){
       return deserialization.status();
@@ -198,48 +203,48 @@ class Binder {
 
   // _____ Operations used in Unbind Structured _____
 
-  absl::StatusOr<std::string> GetContentType(const Message&) {
+  cloudevents_absl::StatusOr<std::string> GetContentType(const Message& message) {
     return absl::InternalError("Unimplemented operation");
   }
 
-  absl::StatusOr<std::string> GetPayload(const Message&) {
+  cloudevents_absl::StatusOr<std::string> GetPayload(const Message& message) {
     return absl::InternalError("Unimplemented operation");
   }
 
   // _____ Operations used in Unbind Binary _____
 
-  absl::Status UnbindMetadata(const Message&, 
-      io::cloudevents::v1::CloudEvent&) {
+  absl::Status UnbindMetadata(const Message& message, 
+      io::cloudevents::v1::CloudEvent& cloud_event) {
     return absl::InternalError("Unimplemented operation");
   }
 
-  absl::Status UnbindData(const Message&, 
-      io::cloudevents::v1::CloudEvent&) {
+  absl::Status UnbindData(const Message& message, 
+      io::cloudevents::v1::CloudEvent& cloud_event) {
     return absl::InternalError("Unimplemented operation");
   }
 
   // _____ Operations used in Bind Structured _____
 
-  absl::Status BindContentType(const std::string&, Message&) {
+  absl::Status BindContentType(const std::string& contenttype, Message& message) {
     return absl::InternalError("Unimplemented operation");
   }
 
-  absl::Status BindDataStructured(const std::string&, Message&) {
+  absl::Status BindDataStructured(const std::string& payload, Message& message) {
     return absl::InternalError("Unimplemented operation");
   }
 
   // _____ Operations used in Bind Binary _____
-  absl::Status BindMetadata(const std::string&, 
-      const io::cloudevents::v1::CloudEvent_CloudEventAttribute&,
-      Message&) {
+  absl::Status BindMetadata(const std::string& key, 
+      const io::cloudevents::v1::CloudEvent_CloudEventAttribute& val,
+      Message& msg) {
     return absl::InternalError("UnimplementedOperation");  
   }
 
-  absl::Status BindDataBinary(const std::string&, Message&) {
+  absl::Status BindDataBinary(const std::string& bin_data, Message& msg) {
     return absl::InternalError("UnimplementedOperation");  
   }
 
-  absl::Status BindDataText(const std::string&, Message&) {
+  absl::Status BindDataText(const std::string& text_data, Message& msg) {
     return absl::InternalError("UnimplementedOperation");  
   }
 };

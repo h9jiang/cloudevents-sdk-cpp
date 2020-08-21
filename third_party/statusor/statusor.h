@@ -2,8 +2,8 @@
 #define STATUSOR_H
 
 /**
- * IMPORTANT: this file is a fork of the soon to be open-source absl::StatusOr class.
- * When the absl::StatusOr lands this file will be removed.
+ * IMPORTANT: this file is a fork of the soon to be open-source cloudevents_absl::StatusOr class.
+ * When the cloudevents_absl::StatusOr lands this file will be removed.
  */
 
 /*
@@ -78,7 +78,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/macros.h"
 
-namespace absl {
+namespace cloudevents_absl {
 
 // Returned StatusOr objects may not be ignored.
 template <typename T> class ABSL_MUST_USE_RESULT StatusOr;
@@ -352,6 +352,6 @@ template <typename T> void StatusOr<T>::IgnoreError() const {
   // no-op
 }
 
-} // namespace absl
+}  // namespace absl
 
 #endif

@@ -35,7 +35,7 @@ template <>
 absl::StatusOr<std::string> Binder<PubsubMessage>::GetPayload(
     const PubsubMessage& pubsub_msg) {
   // get payload and base64 decode
-  return base64::base64_decode(pubsub_msg.data());
+  return cloudevents_base64::base64_decode(pubsub_msg.data());
 }
 
 // _____ Specializations for Unbind Binary _____
@@ -88,7 +88,7 @@ absl::Status Binder<PubsubMessage>::BindDataStructured(
 template <>
 absl::Status Binder<PubsubMessage>::BindMetadata(const std::string& key,
     const CloudEvent_CloudEventAttribute& val, PubsubMessage& pubsub_msg) {
-  absl::StatusOr<std::string> val_str = CloudEventsUtil::ToString(val);
+  cloudevents_absl::StatusOr<std::string> val_str = CloudEventsUtil::ToString(val);
   if (!val_str.ok()) {
     return val_str.status();
   }
@@ -107,7 +107,7 @@ absl::Status Binder<PubsubMessage>::BindDataBinary(const std::string& bin_data,
 template <>
 absl::Status Binder<PubsubMessage>::BindDataText(const std::string& text_data,
     PubsubMessage& pubsub_msg) {
-  absl::StatusOr<std::string> encoded = base64::base64_encode(text_data);
+  cloudevents_absl::StatusOr<std::string> encoded = cloudevents_base64::base64_encode(text_data);
   if (!encoded.ok()) {
     return encoded.status();
   }

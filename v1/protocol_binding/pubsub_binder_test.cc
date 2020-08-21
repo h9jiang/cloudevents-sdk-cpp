@@ -12,7 +12,7 @@ using ::cloudevents::format::Formatter;
 using ::cloudevents::formatter_util::FormatterUtil;
 
 TEST(Bind, Invalid) {
-    absl::StatusOr<PubsubMessage> bind;
+    cloudevents_absl::StatusOr<PubsubMessage> bind;
     Binder<PubsubMessage> binder;
     CloudEvent ce;
     bind = binder.Bind(ce);
@@ -22,7 +22,7 @@ TEST(Bind, Invalid) {
 }
 
 TEST(Bind, Binary_Required) {
-    absl::StatusOr<PubsubMessage> bind;
+    cloudevents_absl::StatusOr<PubsubMessage> bind;
     Binder<PubsubMessage> binder;
     CloudEvent ce;
     ce.set_id("1");
@@ -40,7 +40,7 @@ TEST(Bind, Binary_Required) {
 }
 
 TEST(Bind, Structured_Required) {
-    absl::StatusOr<PubsubMessage> bind;
+    cloudevents_absl::StatusOr<PubsubMessage> bind;
     Binder<PubsubMessage> binder;
     CloudEvent ce;
     ce.set_id("1");
@@ -56,7 +56,7 @@ TEST(Bind, Structured_Required) {
 }
 
 TEST(Unbind, Binary_Required) {
-    absl::StatusOr<CloudEvent> unbind;
+    cloudevents_absl::StatusOr<CloudEvent> unbind;
     Binder<PubsubMessage> binder;
     PubsubMessage pmsg;
     (*pmsg.mutable_attributes())["ce-id"] = "1";
@@ -74,11 +74,11 @@ TEST(Unbind, Binary_Required) {
 }
 
 TEST(Unbind, Structured_Required) {
-    absl::StatusOr<CloudEvent> unbind;
+    cloudevents_absl::StatusOr<CloudEvent> unbind;
     Binder<PubsubMessage> binder;
     PubsubMessage pmsg;
     (*pmsg.mutable_attributes())["content-type"] = "application/cloudevents+json";
-    pmsg.set_data(base64::base64_encode("{\n\t\"id\" : \"1\",\n\t\"source\" : \"/test\",\n\t\"spec_version\" : \"1.0\",\n\t\"type\" : \"test\"\n}"));
+    pmsg.set_data(cloudevents_base64::base64_encode("{\n\t\"id\" : \"1\",\n\t\"source\" : \"/test\",\n\t\"spec_version\" : \"1.0\",\n\t\"type\" : \"test\"\n}"));
     unbind = binder.Unbind(pmsg);
     ASSERT_TRUE(unbind.ok());
     ASSERT_EQ((*unbind).id(), "1");

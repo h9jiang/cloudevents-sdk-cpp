@@ -23,7 +23,7 @@
 
 #include "base64.h"
 
-namespace base64 {
+namespace cloudevents_base64 {
 
  //
  // Depending on the url parameter in base64_chars, one of

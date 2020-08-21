@@ -13,7 +13,7 @@ using ::cloudevents::formatter_util::FormatterUtil;
 typedef boost::beast::http::request<boost::beast::http::string_body> HttpRequest;
 
 TEST(Bind, Invalid) {
-    absl::StatusOr<HttpRequest> bind;
+    cloudevents_absl::StatusOr<HttpRequest> bind;
     Binder<HttpRequest> binder;
     CloudEvent ce;
     bind = binder.Bind(ce);
@@ -23,7 +23,7 @@ TEST(Bind, Invalid) {
 }
 
 TEST(Bind, Binary_Required) {
-    absl::StatusOr<HttpRequest> bind;
+    cloudevents_absl::StatusOr<HttpRequest> bind;
     Binder<HttpRequest> binder;
     CloudEvent ce;
     ce.set_id("1");
@@ -41,7 +41,7 @@ TEST(Bind, Binary_Required) {
 }
 
 TEST(Bind, Structured_Required) {
-    absl::StatusOr<HttpRequest> bind;
+    cloudevents_absl::StatusOr<HttpRequest> bind;
     Binder<HttpRequest> binder;
     CloudEvent ce;
     ce.set_id("1");
@@ -57,7 +57,7 @@ TEST(Bind, Structured_Required) {
 }
 
 TEST(Unbind, Binary_Required) {
-    absl::StatusOr<CloudEvent> unbind;
+    cloudevents_absl::StatusOr<CloudEvent> unbind;
     Binder<HttpRequest> binder;
     HttpRequest http_req;
     http_req.base().set("ce-id", "1");
@@ -75,7 +75,7 @@ TEST(Unbind, Binary_Required) {
 }
 
 TEST(Unbind, Structured_Required) {
-    absl::StatusOr<CloudEvent> unbind;
+    cloudevents_absl::StatusOr<CloudEvent> unbind;
     Binder<HttpRequest> binder;
     HttpRequest http_req;
     http_req.base().set("content-type", "application/cloudevents+json");

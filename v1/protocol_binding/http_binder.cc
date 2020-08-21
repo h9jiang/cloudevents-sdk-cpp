@@ -19,7 +19,7 @@ static const std::string kHttpContentKey = "Content-Type";
 // _____ Operations used in Unbind Structured _____
 
 template <>
-absl::StatusOr<std::string> Binder<HttpRequest>::GetContentType(const HttpRequest& http_req) {
+cloudevents_absl::StatusOr<std::string> Binder<HttpRequest>::GetContentType(const HttpRequest& http_req) {
   auto iter = http_req.base().find(kHttpContentKey.data());
   if (iter == http_req.base().end()) {
     return std::string("");
@@ -28,12 +28,12 @@ absl::StatusOr<std::string> Binder<HttpRequest>::GetContentType(const HttpReques
 }
 
 template <>
-absl::StatusOr<std::string> Binder<HttpRequest>::GetPayload(const HttpRequest& http_req) {
+cloudevents_absl::StatusOr<std::string> Binder<HttpRequest>::GetPayload(const HttpRequest& http_req) {
   return http_req.body();
 }
 
 // template <>
-// absl::StatusOr<CloudEvent> Binder<HttpRequest>::UnbindBinary(HttpRequest& http_req) {
+// cloudevents_absl::StatusOr<CloudEvent> Binder<HttpRequest>::UnbindBinary(HttpRequest& http_req) {
 //   CloudEvent cloud_event;
 //   for (auto it = http_req.base().begin(); it!=http_req.base().end(); ++it) {
 //     std::string key;
@@ -111,21 +111,21 @@ absl::Status Binder<HttpRequest>::BindDataStructured(
 }
 
 // template <>
-// absl::StatusOr<HttpRequest> Binder<HttpRequest>::BindBinary(CloudEvent& cloud_event) {
+// cloudevents_absl::StatusOr<HttpRequest> Binder<HttpRequest>::BindBinary(CloudEvent& cloud_event) {
 //   if (!CloudEventsUtil::IsValid(cloud_event)) {
 //     return absl::InvalidArgumentError("Cloud Event given is not valid.");
 //   }
 
 //   HttpRequest http_req;
 
-//   absl::StatusOr<CeAttrMap> attrs;
+//   cloudevents_absl::StatusOr<CeAttrMap> attrs;
 //   attrs = CloudEventsUtil::GetMetadata(cloud_event);
 //   if (!attrs.ok()) {
 //     return attrs.status();
 //   }
 
 //   for (auto const& attr : (*attrs)) {
-//     absl::StatusOr<std::string> val = CloudEventsUtil::ToString(attr.second);
+//     cloudevents_absl::StatusOr<std::string> val = CloudEventsUtil::ToString(attr.second);
 //     if (!val.ok()) {
 //       return val.status();
 //     }
@@ -162,7 +162,7 @@ absl::Status Binder<HttpRequest>::BindDataStructured(
 template <>
 absl::Status Binder<HttpRequest>::BindMetadata(const std::string& key,
     const CloudEvent_CloudEventAttribute& val, HttpRequest& http_req) {
-  absl::StatusOr<std::string> val_str = CloudEventsUtil::ToString(val);
+  cloudevents_absl::StatusOr<std::string> val_str = CloudEventsUtil::ToString(val);
   if (!val_str.ok()) {
     return val_str.status();
   }

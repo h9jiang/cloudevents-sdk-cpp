@@ -1,6 +1,6 @@
 /**
- * IMPORTANT: this file is a fork of the soon to be open-source absl::StatusOr class.
- * When the absl::StatusOr lands this file will be removed.
+ * IMPORTANT: this file is a fork of the soon to be open-source cloudevents_absl::StatusOr class.
+ * When the cloudevents_absl::StatusOr lands this file will be removed.
  */
 
 /*
@@ -25,8 +25,7 @@
 
 //#include "common/common/assert.h"
 
-namespace absl {
-
+namespace cloudevents_absl {
 namespace internal_statusor {
 
 void Helper::HandleInvalidStatusCtorArg(absl::Status* status) {
@@ -38,6 +37,5 @@ void Helper::HandleInvalidStatusCtorArg(absl::Status* status) {
 
 void Helper::Crash(const absl::Status&) { abort(); }
 
-} // namespace internal_statusor
-
-} // namespace absl
+}  // namespace internal_statusor
+}  // namespace cloudevents_absl

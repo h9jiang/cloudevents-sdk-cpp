@@ -2,8 +2,8 @@
 #define STATUSOR_INTERNALS_H
 
 /**
- * IMPORTANT: this file is a fork of the soon to be open-source absl::StatusOr class.
- * When the absl::StatusOr lands this file will be removed.
+ * IMPORTANT: this file is a fork of the soon to be open-source cloudevents_absl::StatusOr class.
+ * When the cloudevents_absl::StatusOr lands this file will be removed.
  */
 
 /*
@@ -30,7 +30,7 @@
 #include "absl/meta/type_traits.h"
 #include "absl/status/status.h"
 
-namespace absl {
+namespace cloudevents_absl {
 
 namespace internal_statusor {
 
@@ -244,6 +244,6 @@ template <> struct TraitsBase<false, false> {
 
 } // namespace internal_statusor
 
-} // namespace absl
+} // namespace cloudevents_absl
 
 #endif

@@ -17,13 +17,13 @@ namespace binding {
 
 // _____ Operations used in Unbind Structured _____
 template <>
-absl::StatusOr<std::string> 
+cloudevents_absl::StatusOr<std::string> 
   Binder<boost::beast::http::request<boost::beast::http::string_body>>::
   GetContentType(
   const boost::beast::http::request<boost::beast::http::string_body>& http_req);
 
 template <>
-absl::StatusOr<std::string> 
+cloudevents_absl::StatusOr<std::string> 
   Binder<boost::beast::http::request<boost::beast::http::string_body>>::
   GetPayload(
   const boost::beast::http::request<boost::beast::http::string_body>& http_req);
@@ -31,7 +31,7 @@ absl::StatusOr<std::string>
 // _____ Operations used in Unbind Binary _____
 
 // template <>
-// absl::StatusOr<io::cloudevents::v1::CloudEvent> 
+// cloudevents_absl::StatusOr<io::cloudevents::v1::CloudEvent> 
 //   Binder<boost::beast::http::request<boost::beast::http::string_body>>::UnbindBinary(
 //   boost::beast::http::request<boost::beast::http::string_body>& http_req);
 
@@ -84,7 +84,7 @@ absl::Status
   boost::beast::http::request<boost::beast::http::string_body>& http_req);
 
 // template <>
-// absl::StatusOr<boost::beast::http::request<boost::beast::http::string_body>> 
+// cloudevents_absl::StatusOr<boost::beast::http::request<boost::beast::http::string_body>> 
 //   Binder<boost::beast::http::request<boost::beast::http::string_body>>::BindBinary(
 //   io::cloudevents::v1::CloudEvent& cloud_event);
 

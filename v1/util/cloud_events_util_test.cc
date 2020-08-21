@@ -82,7 +82,7 @@ TEST(CloudEventsUtilTest, GetMetadata_NoOptional) {
   cloud_event.set_spec_version("1.0");
   cloud_event.set_type("test");
 
-  absl::StatusOr<CeAttrMap> get_metadata = CloudEventsUtil::GetMetadata(
+  cloudevents_absl::StatusOr<CeAttrMap> get_metadata = CloudEventsUtil::GetMetadata(
     cloud_event);
 
   ASSERT_TRUE(get_metadata.ok());
@@ -103,7 +103,7 @@ TEST(CloudEventsUtilTest, GetMetadata_OneOptional) {
   attr.set_ce_string("test_val");
   (*cloud_event.mutable_attributes())["test_key"] = attr;
 
-  absl::StatusOr<CeAttrMap> get_metadata = CloudEventsUtil::GetMetadata(
+  cloudevents_absl::StatusOr<CeAttrMap> get_metadata = CloudEventsUtil::GetMetadata(
     cloud_event);
 
   ASSERT_TRUE(get_metadata.ok());
@@ -126,7 +126,7 @@ TEST(CloudEventsUtilTest, GetMetadata_TwoOptional) {
   attr.set_ce_string("test_val2");
   (*cloud_event.mutable_attributes())["test_key2"] = attr;
 
-  absl::StatusOr<CeAttrMap> get_metadata = CloudEventsUtil::GetMetadata(
+  cloudevents_absl::StatusOr<CeAttrMap> get_metadata = CloudEventsUtil::GetMetadata(
     cloud_event);
 
   ASSERT_TRUE(get_metadata.ok());
@@ -206,7 +206,7 @@ TEST(CloudEventsUtilTest, SetMetadata_Time) {
 TEST(CloudEventsUtilTest, ToString_BoolFalse) {
   CloudEvent_CloudEventAttribute attr;
   attr.set_ce_boolean(false);
-  absl::StatusOr<std::string> stringify_ce_type;
+  cloudevents_absl::StatusOr<std::string> stringify_ce_type;
 
   stringify_ce_type = CloudEventsUtil::ToString(attr);
 
@@ -217,7 +217,7 @@ TEST(CloudEventsUtilTest, ToString_BoolFalse) {
 TEST(CloudEventsUtilTest, ToString_BoolTrue) {
   CloudEvent_CloudEventAttribute attr;
   attr.set_ce_boolean(true);
-  absl::StatusOr<std::string> stringify_ce_type;
+  cloudevents_absl::StatusOr<std::string> stringify_ce_type;
 
   stringify_ce_type = CloudEventsUtil::ToString(attr);
 
@@ -228,7 +228,7 @@ TEST(CloudEventsUtilTest, ToString_BoolTrue) {
 TEST(CloudEventsUtilTest, ToString_Integer) {
   CloudEvent_CloudEventAttribute attr;
   attr.set_ce_integer(88);
-  absl::StatusOr<std::string> stringify_ce_type;
+  cloudevents_absl::StatusOr<std::string> stringify_ce_type;
 
   stringify_ce_type = CloudEventsUtil::ToString(attr);
 
@@ -239,7 +239,7 @@ TEST(CloudEventsUtilTest, ToString_Integer) {
 TEST(CloudEventsUtilTest, ToString_String) {
   CloudEvent_CloudEventAttribute attr;
   attr.set_ce_string("test");
-  absl::StatusOr<std::string> stringify_ce_type;
+  cloudevents_absl::StatusOr<std::string> stringify_ce_type;
 
   stringify_ce_type = CloudEventsUtil::ToString(attr);
 
@@ -250,7 +250,7 @@ TEST(CloudEventsUtilTest, ToString_String) {
 TEST(CloudEventsUtilTest, ToString_URI) {
   CloudEvent_CloudEventAttribute attr;
   attr.set_ce_uri("https://google.com");
-  absl::StatusOr<std::string> stringify_ce_type;
+  cloudevents_absl::StatusOr<std::string> stringify_ce_type;
 
   stringify_ce_type = CloudEventsUtil::ToString(attr);
 
@@ -261,7 +261,7 @@ TEST(CloudEventsUtilTest, ToString_URI) {
 TEST(CloudEventsUtilTest, ToString_URIRef) {
   CloudEvent_CloudEventAttribute attr;
   attr.set_ce_uri_reference("https://www.google.com/#fragment");
-  absl::StatusOr<std::string> stringify_ce_type;
+  cloudevents_absl::StatusOr<std::string> stringify_ce_type;
 
   stringify_ce_type = CloudEventsUtil::ToString(attr);
 
@@ -274,7 +274,7 @@ TEST(CloudEventsUtilTest, ToString_Timestamp) {
   std::string timestamp_str = TimeUtil::ToString(timestamp);
   CloudEvent_CloudEventAttribute attr;
   attr.mutable_ce_timestamp()-> MergeFrom(timestamp);
-  absl::StatusOr<std::string> stringify_ce_type;
+  cloudevents_absl::StatusOr<std::string> stringify_ce_type;
 
   stringify_ce_type = CloudEventsUtil::ToString(attr);
 
@@ -283,7 +283,7 @@ TEST(CloudEventsUtilTest, ToString_Timestamp) {
 
 TEST(CloudEventsUtilTest, ToString_NotSet) {
   CloudEvent_CloudEventAttribute attr;
-  absl::StatusOr<std::string> stringify_ce_type;
+  cloudevents_absl::StatusOr<std::string> stringify_ce_type;
 
   stringify_ce_type = CloudEventsUtil::ToString(attr);
 
