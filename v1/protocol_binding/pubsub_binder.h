@@ -16,12 +16,12 @@ namespace binding {
 // _____ Specializations for Unbind Structured _____
 
 template <>
-absl::StatusOr<std::string> 
+cloudevents_absl::StatusOr<std::string> 
   Binder<google::pubsub::v1::PubsubMessage>::GetContentType(
   const google::pubsub::v1::PubsubMessage& pubsub_msg);
 
 template <>
-absl::StatusOr<std::string> 
+cloudevents_absl::StatusOr<std::string> 
   Binder<google::pubsub::v1::PubsubMessage>::GetPayload(
   const google::pubsub::v1::PubsubMessage& pubsub_msg);
 

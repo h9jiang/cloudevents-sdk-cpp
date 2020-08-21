@@ -20,7 +20,7 @@ inline static const std::string kPubsubContenttypeKey = "content-type";
 // _____ Specializations for Unbind Structured _____
 
 template <>
-absl::StatusOr<std::string> Binder<PubsubMessage>::GetContentType(
+cloudevents_absl::StatusOr<std::string> Binder<PubsubMessage>::GetContentType(
     const PubsubMessage& pubsub_msg) {
   google::protobuf::Map<std::string, std::string> attrs =
     pubsub_msg.attributes();
@@ -32,7 +32,7 @@ absl::StatusOr<std::string> Binder<PubsubMessage>::GetContentType(
 }
 
 template <>
-absl::StatusOr<std::string> Binder<PubsubMessage>::GetPayload(
+cloudevents_absl::StatusOr<std::string> Binder<PubsubMessage>::GetPayload(
     const PubsubMessage& pubsub_msg) {
   // get payload and base64 decode
   return cloudevents_base64::base64_decode(pubsub_msg.data());

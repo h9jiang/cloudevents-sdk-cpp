@@ -40,3 +40,28 @@ cc_test(
        "@gtest//:gtest_main"
    ],
 )
+
+cc_library(
+    name = "pubsub_binder_lib",
+    srcs = [
+        "pubsub_binder.cc"
+    ],
+    hdrs = [
+        "pubsub_binder.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto:pubsub_cc_proto",
+        ":binder_lib",
+    ],
+)
+
+cc_test(
+   name = "pubsub_binder_test",
+   srcs = ["pubsub_binder_test.cc"],
+   deps = [
+       ":pubsub_binder_lib",
+       "@gtest//:gtest",
+       "@gtest//:gtest_main"
+   ],
+)
