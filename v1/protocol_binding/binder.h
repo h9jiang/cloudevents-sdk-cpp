@@ -199,48 +199,48 @@ class Binder {
 
   // _____ Operations used in Unbind Structured _____
 
-  cloudevents_absl::StatusOr<std::string> GetContentType(const Message& message) {
+  cloudevents_absl::StatusOr<std::string> GetContentType(const Message&) {
     return absl::InternalError("Unimplemented operation");
   }
 
-  cloudevents_absl::StatusOr<std::string> GetPayload(const Message& message) {
+  cloudevents_absl::StatusOr<std::string> GetPayload(const Message&) {
     return absl::InternalError("Unimplemented operation");
   }
 
   // _____ Operations used in Unbind Binary _____
 
-  absl::Status UnbindMetadata(const Message& message, 
-      io::cloudevents::v1::CloudEvent& cloud_event) {
+  absl::Status UnbindMetadata(const Message&, 
+      io::cloudevents::v1::CloudEvent&) {
     return absl::InternalError("Unimplemented operation");
   }
 
-  absl::Status UnbindData(const Message& message, 
-      io::cloudevents::v1::CloudEvent& cloud_event) {
+  absl::Status UnbindData(const Message&, 
+      io::cloudevents::v1::CloudEvent&) {
     return absl::InternalError("Unimplemented operation");
   }
 
   // _____ Operations used in Bind Structured _____
 
-  absl::Status BindContentType(const std::string& contenttype, Message& message) {
+  absl::Status BindContentType(const std::string&, Message&) {
     return absl::InternalError("Unimplemented operation");
   }
 
-  absl::Status BindDataStructured(const std::string& payload, Message& message) {
+  absl::Status BindDataStructured(const std::string&, Message&) {
     return absl::InternalError("Unimplemented operation");
   }
 
   // _____ Operations used in Bind Binary _____
-  absl::Status BindMetadata(const std::string& key, 
-      const io::cloudevents::v1::CloudEvent_CloudEventAttribute& val,
-      Message& msg) {
+  absl::Status BindMetadata(const std::string&, 
+      const io::cloudevents::v1::CloudEvent_CloudEventAttribute&,
+      Message&) {
     return absl::InternalError("UnimplementedOperation");  
   }
 
-  absl::Status BindDataBinary(const std::string& bin_data, Message& msg) {
+  absl::Status BindDataBinary(const std::string&, Message&) {
     return absl::InternalError("UnimplementedOperation");  
   }
 
-  absl::Status BindDataText(const std::string& text_data, Message& msg) {
+  absl::Status BindDataText(const std::string&, Message&) {
     return absl::InternalError("UnimplementedOperation");  
   }
 };
