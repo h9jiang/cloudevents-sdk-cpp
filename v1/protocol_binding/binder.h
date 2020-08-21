@@ -9,7 +9,7 @@
 #include "third_party/statusor/statusor.h"
 #include "third_party/base64/base64.h"
 #include "proto/cloud_event.pb.h"
-#include "external/googleapis/google/pubsub/v1/pubsub.pb.h"
+#include "external/com_google_googleapis/google/pubsub/v1/pubsub.pb.h"
 #include "v1/event_format/structured_cloud_event.h"
 #include "v1/event_format/json_formatter.h"
 #include "v1/util/formatter_util.h"
@@ -81,11 +81,7 @@ class Binder {
 
   // Create Structured-ContentMode Message
   // containing Format-serialized CloudEvents
-<<<<<<< HEAD
-  absl::StatusOr<Message> Bind(const io::cloudevents::v1::CloudEvent& cloud_event,
-=======
   cloudevents_absl::StatusOr<Message> Bind(const io::cloudevents::v1::CloudEvent& cloud_event,
->>>>>>> upstream/binder-all
       const cloudevents::format::Format& format) {
     if (auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(
         cloud_event); !valid.ok()) {
