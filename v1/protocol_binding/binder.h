@@ -30,6 +30,8 @@ namespace binding {
 template <typename Message>
 class Binder {
  public:
+  virtual ~Binder() {};
+
   // Create Binary-ContentMode Message containing CloudEvent
   cloudevents_absl::StatusOr<Message> Bind(
       const io::cloudevents::v1::CloudEvent& cloud_event) {
