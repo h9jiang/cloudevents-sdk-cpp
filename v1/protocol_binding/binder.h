@@ -6,7 +6,7 @@
 #include "third_party/statusor/statusor.h"
 #include "third_party/base64/base64.h"
 #include "proto/cloud_event.pb.h"
-#include "external/com_google_googleapis/google/pubsub/v1/pubsub.pb.h"
+#include "google/pubsub/v1/pubsub.pb.h"
 #include "v1/event_format/structured_cloud_event.h"
 #include "v1/event_format/json_formatter.h"
 #include "v1/util/formatter_util.h"
