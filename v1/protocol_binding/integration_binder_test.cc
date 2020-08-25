@@ -44,6 +44,43 @@ TEST(BindUnbind, PubsubToHttpReq) {
   ASSERT_EQ((*bind).base()["ce-type"], "4");
 }
 
+TEST(BindUnbind, PubsubToHttpReqWithData) {
+  PubsubMessage pubsub_msg;
+  (*pubsub_msg.mutable_attributes())["ce-id"] = "1";
+  (*pubsub_msg.mutable_attributes())["ce-source"] = "2";
+  (*pubsub_msg.mutable_attributes())["ce-spec_version"] = "3";
+  (*pubsub_msg.mutable_attributes())["ce-type"] = "4";
+  (*pubsub_msg.mutable_attributes())["ce-datacontenttype"] = "application/text";
+  pubsub_msg.set_data("hello");
+
+  PubsubBinder binder_pubsub;
+  HttpReqBinder binder_http_req;
+
+  StatusOr<CloudEvent> unbind = binder_pubsub.Unbind(pubsub_msg);
+  
+  ASSERT_TRUE(unbind.ok());
+  ASSERT_EQ((*unbind).id(), "1");
+  ASSERT_EQ((*unbind).source(), "2");
+  ASSERT_EQ((*unbind).spec_version(), "3");
+  ASSERT_EQ((*unbind).type(), "4");
+  
+  StatusOr<HttpRequest> bind = binder_http_req.Bind(*unbind);
+
+  ASSERT_TRUE(bind.ok());
+  ASSERT_EQ((*bind).base()["ce-id"], "1");
+  ASSERT_EQ((*bind).base()["ce-source"], "2");
+  ASSERT_EQ((*bind).base()["ce-spec_version"], "3");
+  ASSERT_EQ((*bind).base()["ce-type"], "4");
+
+  // this is true
+  EXPECT_EQ((*bind).base()["ce-datacontenttype"], "application/text");
+  
+  // this is false
+  EXPECT_EQ((*bind).base()["content-type"], "application/text");
+
+  EXPECT_EQ((*bind).body(), "hello");
+}
+
 
 }  // namespace binding
 }  // namespace cloudevents
