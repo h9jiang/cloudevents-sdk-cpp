@@ -18,25 +18,19 @@ TEST(BindUnbind, PubsubToHttpReqWithData) {
   (*pubsub_msg.mutable_attributes())["ce-specversion"] = "3";
   (*pubsub_msg.mutable_attributes())["ce-type"] = "4";
   (*pubsub_msg.mutable_attributes())["ce-datacontenttype"] = "application/text";
-  pubsub_msg.set_data("hello");
+  pubsub_msg.set_data("aGVsbG8=");
 
   PubsubBinder binder_pubsub;
-  HttpReqBinder binder_http_req;
-
-  std::cout << "-------- 1 --------" << std::endl;
 
   cloudevents_absl::StatusOr<CloudEvent> unbind = binder_pubsub.Unbind(pubsub_msg);
-  
-  std::cout << "-------- 2 --------" << std::endl;
 
   ASSERT_TRUE(unbind.ok());
   ASSERT_EQ((*unbind).id(), "1");
   ASSERT_EQ((*unbind).source(), "2");
   ASSERT_EQ((*unbind).spec_version(), "3");
   ASSERT_EQ((*unbind).type(), "4");
-  
-  std::cout << "-------- 3 --------" << std::endl;
 
+  HttpReqBinder binder_http_req;
   cloudevents_absl::StatusOr<HttpRequest> bind = binder_http_req.Bind(*unbind);
 
   ASSERT_TRUE(bind.ok());

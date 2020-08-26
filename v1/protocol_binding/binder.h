@@ -151,13 +151,11 @@ class Binder {
       }
       return cloud_event;
     }
-
     cloudevents_absl::StatusOr<cloudevents::format::Format> format =
       cloudevents::formatter_util::FormatterUtil::FormatFromStr(format_str);
     if (!format.ok()){
       return format.status();
     }
-
     cloudevents_absl::StatusOr<std::string> get_payload = GetPayload(message);
     if (!get_payload.ok()) {
       return get_payload.status();
