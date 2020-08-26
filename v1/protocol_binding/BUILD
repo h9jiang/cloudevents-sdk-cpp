@@ -41,6 +41,7 @@ cc_test(
    srcs = ["pubsub_binder_test.cc"],
    deps = [
        ":pubsub_binder_lib",
+       ":http_binder_lib",
        "@gtest//:gtest",
        "@gtest//:gtest_main"
    ],

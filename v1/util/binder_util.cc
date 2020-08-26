@@ -8,8 +8,11 @@ constexpr char kContentTypePrefix[] = "application/cloudevents+";
 
 // length of prefix constants are made constexpr to avoid
 // multiple calls to strlen()
-constexpr size_t kMetadataPrefixLen = std::char_traits<char>::length(kMetadataPrefix);
-constexpr size_t kContentTypePrefixLen = std::char_traits<char>::length(kContentTypePrefix);
+// constexpr size_t kMetadataPrefixLen = std::char_traits<char>::length(kMetadataPrefix);
+// constexpr size_t kContentTypePrefixLen = std::char_traits<char>::length(kContentTypePrefix);
+
+constexpr size_t kMetadataPrefixLen = 3;
+constexpr size_t kContentTypePrefixLen = 24;
 
 constexpr char kErrNoPrefix[] = "Prefix is not present in the given value.";
 
