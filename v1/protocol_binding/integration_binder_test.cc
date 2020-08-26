@@ -72,10 +72,10 @@ TEST(BindUnbind, PubsubToHttpReqWithData) {
   ASSERT_EQ((*bind).base()["ce-spec_version"], "3");
   ASSERT_EQ((*bind).base()["ce-type"], "4");
 
-  // this is true
+  // option 1
   EXPECT_EQ((*bind).base()["ce-datacontenttype"], "application/text");
   
-  // this is false
+  // option 2
   EXPECT_EQ((*bind).base()["content-type"], "application/text");
 
   EXPECT_EQ((*bind).body(), "hello");

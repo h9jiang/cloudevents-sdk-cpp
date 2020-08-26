@@ -7,43 +7,14 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//third_party/base64:base64_lib",
-        "//third_party/statusor:statusor_lib",
         "//proto:cloud_event_cc_proto",
-        "//proto:pubsub_cc_proto",
-        "//v1/event_format:json_formatter_lib",
+        "//third_party/statusor:statusor_lib",
         "//v1/util:binder_util_lib",
-        "//v1/util:formatter_util_lib",
         "//v1/util:cloud_events_util_lib",
+        "//v1/util:formatter_util_lib",
 
     ],
 )
-
-cc_library(
-    name = "http_binder_lib",
-    srcs = [
-        "http_binder.cc"
-    ],
-    hdrs = [
-        "http_binder.h",
-    ],
-    visibility = ["//visibility:public"],
-    deps = [
-        "@boost//:beast",
-        ":binder_lib",
-    ],
-)
-
-cc_test(
-   name = "http_binder_test",
-   srcs = ["http_binder_test.cc"],
-   deps = [
-       ":http_binder_lib",
-       "@gtest//:gtest",
-       "@gtest//:gtest_main"
-   ],
-)
-
 
 cc_library(
     name = "pubsub_binder_lib",
@@ -55,10 +26,10 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//third_party/statusor:statusor_lib",
-        "//third_party/base64:base64_lib",
         "//proto:cloud_event_cc_proto",
         "//proto:pubsub_cc_proto",
+        "//third_party/statusor:statusor_lib",
+        "//third_party/base64:base64_lib",
         "//v1/util:binder_util_lib",
         "//v1/util:cloud_events_util_lib",
         ":binder_lib",
@@ -75,12 +46,30 @@ cc_test(
    ],
 )
 
+cc_library(
+    name = "http_binder_lib",
+    srcs = [
+        "http_binder.cc"
+    ],
+    hdrs = [
+        "http_binder.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@boost//:beast",
+        "//proto:cloud_event_cc_proto",
+        "//third_party/statusor:statusor_lib",
+        "//v1/util:binder_util_lib",
+        "//v1/util:cloud_events_util_lib",
+        ":binder_lib",
+    ],
+)
+
 cc_test(
-   name = "integration_binder_test",
-   srcs = ["integration_binder_test.cc"],
+   name = "http_binder_test",
+   srcs = ["http_binder_test.cc"],
    deps = [
-       "http_binder_lib",
-       ":pubsub_binder_lib",
+       ":http_binder_lib",
        "@gtest//:gtest",
        "@gtest//:gtest_main"
    ],

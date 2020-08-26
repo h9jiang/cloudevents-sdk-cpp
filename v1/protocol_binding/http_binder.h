@@ -2,6 +2,9 @@
 #define CLOUDEVENTSCPPSDK_V1_BINDING_HTTPBINDER_H
 
 #include <boost/beast/http.hpp>
+
+#include "proto/cloud_event.pb.h"
+#include "third_party/statusor/statusor.h"
 #include "v1/protocol_binding/binder.h"
 
 namespace cloudevents {
@@ -20,8 +23,6 @@ template <bool IsReq>
 class HttpBinder: public Binder<
   boost::beast::http::message<IsReq, boost::beast::http::string_body>> {
  private:
-  // _____ Operations used in Bind Binary _____
-
   absl::Status BindMetadata(const std::string& key,
     const io::cloudevents::v1::CloudEvent_CloudEventAttribute& val,
     boost::beast::http::message<
@@ -31,12 +32,9 @@ class HttpBinder: public Binder<
     boost::beast::http::message<
     IsReq, boost::beast::http::string_body>& http_msg) override;
 
-
   absl::Status BindDataText(const std::string& text_data,
     boost::beast::http::message<
     IsReq, boost::beast::http::string_body>& http_msg) override;
-
-  // _____ Operations used in Bind Structured _____
 
   absl::Status BindContentType(const std::string& contenttype,
     boost::beast::http::message<
@@ -45,8 +43,6 @@ class HttpBinder: public Binder<
   absl::Status BindDataStructured(const std::string& payload,
     boost::beast::http::message<
     IsReq, boost::beast::http::string_body>& http_msg) override;
-
-  // _____ Operations used in Unbind Binary _____
 
   absl::Status UnbindMetadata(
     const boost::beast::http::message<
@@ -58,8 +54,6 @@ class HttpBinder: public Binder<
     IsReq, boost::beast::http::string_body>& http_msg,
     io::cloudevents::v1::CloudEvent& cloud_event) override;
 
-  // _____ Operations used in Unbind Structured _____
-
   cloudevents_absl::StatusOr<std::string> GetContentType(
     const boost::beast::http::message<
     IsReq, boost::beast::http::string_body>& http_msg) override;
@@ -70,8 +64,9 @@ class HttpBinder: public Binder<
 };
 
 // _____ Concrete Binders _____
-class HttpReqBinder: public HttpBinder<true> {};
-class HttpResBinder: public HttpBinder<false> {};
+using HttpReqBinder = HttpBinder<true>;
+using HttpResBinder = HttpBinder<false>;
+
 
 }  // namespace binding
 }  // namespace cloudevents
