@@ -71,8 +71,8 @@ class Binder {
   // Create Binary-ContentMode Message containing CloudEvent.
   cloudevents_absl::StatusOr<Message> Bind(
       const io::cloudevents::v1::CloudEvent& cloud_event) {
-    if (auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(
-        cloud_event); !valid.ok()) {
+    auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(cloud_event);
+    if (!valid.ok()) {
       return valid;
     }
 
@@ -89,28 +89,34 @@ class Binder {
     for (auto const& attr : (*attrs)) {
       std::string key = attr.first;
       cloudevents::binder_util::BinderUtil::AddMetadataPrefix(key);
-      if (auto bind_metadata = BindMetadata(key, attr.second, msg);
-          !bind_metadata.ok()) {
+      auto bind_metadata = BindMetadata(key, attr.second, msg);
+      if (!bind_metadata.ok()) {
         return bind_metadata;
       }
     }
 
     switch (cloud_event.data_oneof_case()) {
       case io::cloudevents::v1::CloudEvent::DataOneofCase::kBinaryData:
-        if (auto set_bin_data = BindDataBinary(cloud_event.binary_data(), msg);
-          !set_bin_data.ok()) {
+      {
+        auto set_bin_data = BindDataBinary(cloud_event.binary_data(), msg);
+        if (!set_bin_data.ok()) {
           return set_bin_data;
         }
         break;
+      }
       case io::cloudevents::v1::CloudEvent::DataOneofCase::kTextData:
-        if (auto set_text_data = BindDataText(cloud_event.text_data(), msg);
-          !set_text_data.ok()) {
+      {
+        auto set_text_data = BindDataText(cloud_event.text_data(), msg);
+        if (!set_text_data.ok()) {
           return set_text_data;
         }
         break;
+      }
       case io::cloudevents::v1::CloudEvent::DataOneofCase::kProtoData:
+      {
         // TODO (#17): CloudEvent Any in JsonFormatter
         return absl::UnimplementedError("protobuf::Any not supported yet.");
+      }
       case io::cloudevents::v1::CloudEvent::DATA_ONEOF_NOT_SET:
         break;
     }
@@ -123,8 +129,8 @@ class Binder {
   cloudevents_absl::StatusOr<Message> Bind(
       const io::cloudevents::v1::CloudEvent& cloud_event,
       const cloudevents::format::Format& format) {
-    if (auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(
-        cloud_event); !valid.ok()) {
+    auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(cloud_event); 
+    if (!valid.ok()) {
       return valid;
     }
 
@@ -157,8 +163,8 @@ class Binder {
       return set_contenttype;
     }
 
-    if (auto set_payload = BindDataStructured(
-        (*serialization)->serialized_data, msg); !set_payload.ok()) {
+    auto set_payload = BindDataStructured((*serialization)->serialized_data, msg);
+    if (!set_payload.ok()) {
       return set_payload;
     }
 
@@ -178,16 +184,18 @@ class Binder {
         StripContentTypePrefix(format_str).ok()) {
       // Unbind Binary-ContentMode Message
       io::cloudevents::v1::CloudEvent cloud_event;
-      if (auto unbind_metadata = UnbindMetadata(message, cloud_event);
-          !unbind_metadata.ok()) {
+      auto unbind_metadata = UnbindMetadata(message, cloud_event);
+      if (!unbind_metadata.ok()) {
         return unbind_metadata;
       }
-      if (auto unbind_data = UnbindData(message, cloud_event);
-          !unbind_data.ok()) {
+
+      auto unbind_data = UnbindData(message, cloud_event);
+      if (!unbind_data.ok()) {
         return unbind_data;
       }
-      if (auto is_valid = cloudevents::cloudevents_util::CloudEventsUtil::
-          IsValid(cloud_event); !is_valid.ok()) {
+
+      auto is_valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(cloud_event);
+      if (!is_valid.ok()) {
         return is_valid;
       }
       return cloud_event;
@@ -221,8 +229,8 @@ class Binder {
       return deserialization.status();
     }
 
-    if (auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(
-        *deserialization); !valid.ok()) {
+    auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(*deserialization);
+    if (!valid.ok()) {
       return valid;
     }
 
